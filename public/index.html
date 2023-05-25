@@ -3,41 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Title</title>
+  <title>Join the </title>
   <link rel="stylesheet" href="/styles.css">
       <!-- <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css"> -->
       <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css">
-
   <script src="https://unpkg.com/htmx.org@1.8.6"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
   <style>
+    /* CSS */
+.visually-hidden {
+	position: absolute;
+	left: -9999px;
+}
+main {
+  margin: auto;
+  text-align: center;
+}
+input {
+  display: block;
+  margin: auto;
+}
   </style>
 </head>
 <body>
-    <h3>Title</h3>
+  <main>
+    <h1>A cooperatively run streaming platform, social community, and organizing initiative.</h1>
+      <div>
+      <form class="" style="" hx-post="/.netlify/functions/saveEmail" hx-trigger="submit" hx-redirect="/success" _="on htmx:afterSwap call createProjectResponseHandler(event)">
 
-<div>
-<form class="" style="width: 500px; max-width: 100%;" hx-post="/.netlify/functions/saveEmail" hx-trigger="submit" hx-redirect="/success" _="on htmx:afterSwap call createProjectResponseHandler(event)">
+            <label for="email"><em>Enter your email to join:</label>
+            <input type="email" id="email" name="email" style="width: 300px; max-width: 100%;" required>
+            <br>
+            <fieldset class="visually-hidden" aria-hidden="true">
+          <label for="last-name-subscribe-field">Last Name:</label>
+          <input
+            type="text"
+            id="last-name-subscribe-field"
+            name="last_name"
+            autocomplete="off"
+            tabindex="-1"
+          />
+        </fieldset>
+            <button type="submit">Join Coop</button>
+        </form>
 
-      <label for="email">Enter your email below.</label>
-      <input type="email" id="email" name="email" required>
-      <br>
-      <fieldset class="visually-hidden" aria-hidden="true">
-		<label for="last-name-subscribe-field">Last Name:</label>
-		<input
-			type="text"
-			id="last-name-subscribe-field"
-			name="last_name"
-			autocomplete="off"
-			tabindex="-1"
-		/>
-	</fieldset>
-      <button type="submit">Submit</button>
-  </form>
-
-  <p id="response-message"></p>
-  <div id="response-container"></div>
-  </div>
+        <p id="response-message"></p>
+        <div id="response-container"></div>
+        </div>
+        </main>
 </body>
 
 <script type="text/javascript">
@@ -49,7 +62,7 @@
 
             if (xhr.status === 200) {
                 const responseContainer = document.getElementById('response-container');
-                responseContainer.innerHTML = `<p>Form successfully submitted!`;
+                responseContainer.innerHTML = `<p>Email successfully submitted!  You're in!  Stay tuned for more info!`;
 
                     // setTimeout(function() {
                     //     const url = new URL(window.location.origin);
@@ -68,11 +81,4 @@
             }
         }
   </script>
-  <style>
-    /* CSS */
-.visually-hidden {
-	position: absolute;
-	left: -9999px;
-}
-  </style>
 </html>
