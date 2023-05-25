@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Join the </title>
+  <title>Title</title>
   <link rel="stylesheet" href="/styles.css">
       <!-- <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css"> -->
       <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css">
@@ -14,7 +14,7 @@
   </style>
 </head>
 <body>
-    <h3>A cooperatively run streaming platform, social community, and organizing popular education initiative.</h3>
+    <h3>Title</h3>
 
 <div>
 <form class="" style="width: 500px; max-width: 100%;" hx-post="/.netlify/functions/saveEmail" hx-trigger="submit" hx-redirect="/success" _="on htmx:afterSwap call createProjectResponseHandler(event)">
@@ -32,7 +32,7 @@
 			tabindex="-1"
 		/>
 	</fieldset>
-      <button type="submit">Join Coop</button>
+      <button type="submit">Submit</button>
   </form>
 
   <p id="response-message"></p>
@@ -49,7 +49,7 @@
 
             if (xhr.status === 200) {
                 const responseContainer = document.getElementById('response-container');
-                responseContainer.innerHTML = `<p>Email successfully submitted!  You're in!  Stay tuned for more info!`;
+                responseContainer.innerHTML = `<p>Form successfully submitted!`;
 
                     // setTimeout(function() {
                     //     const url = new URL(window.location.origin);
