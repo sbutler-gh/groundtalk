@@ -3,13 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Join the </title>
+  <title>Shape the story</title>
   <link rel="stylesheet" href="/styles.css">
       <!-- <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css"> -->
       <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css">
       <link rel="stylesheet" href="/styles.css">
   <script src="https://unpkg.com/htmx.org@1.8.6"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js'></script>
+  <!-- <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.8/index.global.min.js'></script> -->
+  <script type='text/javascript'>
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const calendarEl = document.getElementById('calendar')
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+      googleCalendarApiKey: process.env.GOOGLE_CALENDAR_API_KEY,
+      // initialView: 'listWeek',
+      eventSources: [
+        {
+          googleCalendarId: '72dh5ehol3oufbkusqagta0qf8@group.calendar.google.com'
+        },
+        // {
+        // url: 'https://350santafe.org/events/?ical=1.ics',
+        // format: 'ics'
+        // }
+        // {
+        //   googleCalendarId: 'efgh5678@group.calendar.google.com',
+        //   className: 'nice-event'
+        // }
+      ]
+    });
+
+    calendar.render();
+  });
+
+  </script>
 </head>
 <body>
   <main>
@@ -19,9 +48,84 @@
 
 <p>The power in Twitter was our communities.  If we want to change stories, cultures, and narratives – for the worlds we want to live in — we have to build that again.
     
-<p>So feel free to ask others to join this initiative with you.  Because you own it too.
+<p>So ask others to join this with you — because you own it too.
 
-<p>And that's why this it will be different.</p>
+  <p>And that's why this will be different.</p>
+
+  <p>Here's the text you can share with others — on social media, email, text, posters — to help them find this cooperative and make this happen together:
+
+<p>And here are some examples of what this could look like:
+  
+  <h3>Events</h3>
+
+      <div id='calendar'></div>
+
+
+  <h3>Resources</h3>
+
+  <div class="cards-container">
+  <!-- <iframe src="https://threadreaderapp.com/thread/1570122141525512192.html"></iframe> -->
+  <div class="card">
+    <h4>Hugelkultur Bed Tutorial
+      <sub-title>by @TheLastFarm</sub-title>
+    </h4>
+  </div>
+
+  <div class="card">
+    <h4>DIY Air Filter Build
+      <!-- <sub-title>via Instructables</sub-title> -->
+    </h4>
+  </div>
+
+  <div class="card">
+    <h4>DIY Solar Water Heater Build
+      <sub-title>by OpenSourceLowTech.org</sub-title>
+    </h4>
+  </div>
+
+  <div class="card">
+    <h4>Open-source Trash Recycler
+      <sub-title>by Sam Smith (Magic Tool Bus)</sub-title>
+    </h4>
+  </div>
+<br>
+  <a href="">Add a resource</a>
+
+  </div>
+
+  <h3>Education + Curriculums</h3>
+
+  <div class="cards-container">
+
+  <div class="card">
+    <h4>Community Mapping Workshop
+      <sub-title>Introduction to Bioregions and Local Watersheds</sub-title>
+    </h4>
+  </div>
+
+  <div class="card">
+    <h4>Grassroots Theatre Workshop
+      <sub-title>Introduction to Bioregions and Local Watersheds</sub-title>
+    </h4>
+  </div>
+
+  <div class="card">
+    <h4>Anti-Racist Facilitation Guide for Co-op Development
+      <sub-title>by Solidarity Resource</sub-title>
+    </h4>
+  </div>
+  
+  </div>
+
+  <br>
+
+  <a href="">Add a resource</a>
+
+  <h3>Organizing locally, regionally, and beyond</h3>
+
+  <p>Have your own ideas to share?  Paste them below.
+
+
 
 <p>In terms of next steps, once enough people have signed up with interest, we'll probably organize some online events to gather and connect further.</p>
 
