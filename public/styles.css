@@ -1,0 +1,13 @@
+
+.visually-hidden {
+position: absolute;
+left: -9999px;
+}
+main {
+margin: auto;
+text-align: center;
+}
+input {
+display: block;
+margin: auto;
+}

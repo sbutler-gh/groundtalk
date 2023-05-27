@@ -3,35 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Join the </title>
+  <title>Join the cooperative media future.</title>
   <link rel="stylesheet" href="/styles.css">
       <!-- <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css"> -->
       <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css">
+      <link rel="stylesheet" href="/styles.css">
   <script src="https://unpkg.com/htmx.org@1.8.6"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
-  <style>
-    /* CSS */
-.visually-hidden {
-	position: absolute;
-	left: -9999px;
-}
-main {
-  margin: auto;
-  text-align: center;
-}
-input {
-  display: block;
-  margin: auto;
-}
-  </style>
 </head>
 <body>
   <main>
     <h1>A cooperatively run streaming platform, social community, and organizing initiative.</h1>
+    <p><em>From the ashes of those who flew too close to the sun. 🥲</em></p>
       <div>
       <form class="" style="" hx-post="/.netlify/functions/saveEmail" hx-trigger="submit" hx-redirect="/success" _="on htmx:afterSwap call createProjectResponseHandler(event)">
 
-            <label for="email"><em>Enter your email to join:</label>
+            <label for="email"><strong>Enter your email to join the cooperative:</strong></label>
             <input type="email" id="email" name="email" style="width: 300px; max-width: 100%;" required>
             <br>
             <fieldset class="visually-hidden" aria-hidden="true">
@@ -61,8 +48,10 @@ input {
             // console.log(response);
 
             if (xhr.status === 200) {
-                const responseContainer = document.getElementById('response-container');
-                responseContainer.innerHTML = `<p>Email successfully submitted!  You're in!  Stay tuned for more info!`;
+                // const responseContainer = document.getElementById('response-container');
+                // responseContainer.innerHTML = `<p>Email successfully submitted!  You're in!  Stay tuned for more info!`;
+                
+                  window.location.href="/success"
 
                     // setTimeout(function() {
                     //     const url = new URL(window.location.origin);
