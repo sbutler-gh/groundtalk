@@ -13,32 +13,60 @@
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js'></script>
   <!-- <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.8/index.global.min.js'></script> -->
-  <script type='text/javascript'>
+  <script type='text/javascript'  type="module">
 
+    async function fetchAsync (url) {
+      let response = await fetch(url);
+      let data = await response.json();
+      return renderCalendar(data);
+    }
+    
+    
     document.addEventListener('DOMContentLoaded', function() {
-      const calendarEl = document.getElementById('calendar')
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-      googleCalendarApiKey: process.env.GOOGLE_CALENDAR_API_KEY,
-      // initialView: 'listWeek',
-      eventSources: [
-        {
-          googleCalendarId: '72dh5ehol3oufbkusqagta0qf8@group.calendar.google.com'
-        },
-        // {
-        // url: 'https://350santafe.org/events/?ical=1.ics',
-        // format: 'ics'
-        // }
-        // {
-        //   googleCalendarId: 'efgh5678@group.calendar.google.com',
-        //   className: 'nice-event'
-        // }
-      ]
-    });
+          
+          fetchAsync('/.netlify/functions/insertEvents')
+      });
+    
+      function renderCalendar(data) {
+    
+        const calendarEl = document.getElementById('calendar')
+        console.log('rendering');
+    
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          googleCalendarApiKey: data,
+          // initialView: 'listWeek',
+          eventSources: [
+            {
+              googleCalendarId: '72dh5ehol3oufbkusqagta0qf8@group.calendar.google.com'
+            },
+            // {
+            // url: 'https://350santafe.org/events/?ical=1.ics',
+            // format: 'ics'
+            // }
+            // {
+            //   googleCalendarId: 'efgh5678@group.calendar.google.com',
+            //   className: 'nice-event'
+            // }
+          ],
+          eventMouseEnter: function(info) {
 
-    calendar.render();
-  });
+            const popup = document.getElementById('popup');
+            
+            popup.innerHTML = `<h4>${info.event.title}</h4><sub-title><em>${info.event.start}</em></sub-title><p>${info.event.extendedProps.description}`
 
-  </script>
+              Object.assign(popup.style, {
+            left: `${info.jsEvent.pageX}px`,
+            top: `${info.jsEvent.pageY}px`,
+            display: 'block'
+            })
+
+            console.log(popup);
+            },
+        });
+    
+        calendar.render();
+      }
+    </script>
 </head>
 <body>
   <main>
@@ -59,6 +87,8 @@
   <h3>Events</h3>
 
       <div id='calendar'></div>
+      <div id="popup"></div>
+
 
 
   <h3>Resources</h3>

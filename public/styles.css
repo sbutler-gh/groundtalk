@@ -39,3 +39,17 @@ margin: auto;
   .card p {
 
   }
+
+  #popup {
+    position: absolute;
+    display: none; 
+    border: solid 1px black; 
+    max-width: 300px;
+    z-index: 100;
+    background: aliceblue;
+    max-height: 200px;
+    overflow: scroll;
+    padding: 1rem;
+    box-shadow: 3px 2px 5px 1px grey;
+    border-radius: 7px;
+  }
