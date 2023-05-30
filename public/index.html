@@ -20,10 +20,10 @@ crossorigin=""/>
 <!-- <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.8/index.global.min.js'></script> -->
 </head>
 <body>
-  <main>
+  <main id="initial">
     <h1>A cooperatively built social community, to build our worlds.</h1>
       <div>
-      <form class="" style="" hx-post="/.netlify/functions/signUp" hx-trigger="submit" hx-redirect="/success" _="on htmx:afterSwap call createProjectResponseHandler(event)">
+      <form class="" style="" hx-post="/.netlify/functions/signUp" hx-trigger="submit" _="on htmx:afterSwap call createProjectResponseHandler(event)">
 
         <fieldset class="visually-hidden" aria-hidden="true">
           <label for="last-name-subscribe-field">Last Name:</label>
@@ -110,12 +110,19 @@ crossorigin=""/>
             <button type="submit" style="font-size: 24px; cursor: pointer;">Join Coop</button>
         </form>
         </main>
+        <section id="success">
+        </section>
 </body>
 
 <script type="text/javascript">
         function createProjectResponseHandler(event) {
             console.log(event);
             const xhr = event.detail.xhr;
+
+            history.replaceState("", "", "success.html");
+
+
+
             // const response = JSON.parse(xhr.responseText);
             // console.log(response);
 
@@ -123,7 +130,7 @@ crossorigin=""/>
                 // const responseContainer = document.getElementById('response-container');
                 // responseContainer.innerHTML = `<p>Email successfully submitted!  You're in!  Stay tuned for more info!`;
                 
-                  window.location.href="/success"
+                  // window.location.href="/success"
 
                     // setTimeout(function() {
                     //     const url = new URL(window.location.origin);

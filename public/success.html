@@ -72,24 +72,41 @@
   <main>
 <h2>You're in!</h2>
 
-<p>Whatever this becomes, you're part of it now.</p>
-
-<p>The power in Twitter was our communities.  If we want to change stories, cultures, and narratives – for the worlds we want to live in — we have to build that again.
+<p>The power in Twitter was our communities.  If we want to change stories and build movements, we have to grow <em>us</em> again.
     
-<p>So ask others to join this with you — because you own it too.
+<p>So ask others to join this with you — because <strong><em>you own it too.</em></strong>
 
-  <p>And that's why this will be different.</p>
+  <p><strong>And that's why this will be different.</strong></p>
 
   <p>Here's the text you can share with others — on social media, email, text, posters — to help them find this cooperative and make this happen together:
 
-<p>And here are some examples of what this could look like:
+    <blockquote id="share-text" style="text-align: left; max-width: 500px; margin: auto; border: solid 1px lightgrey;">
+      <p>Want to join a cooperatively built social community and movement infrastructure hub?</p>
+      <p>An initiative we own and manage cooperatively, so we don’t need to build and abandon the “public” square again.
+      <p>Filled with spaces for learning, art and stories, events and gatherings, and community and movement infrastructure to make the changes we want to see in the world.
+    </blockquote>
+    <br>
+    <button onclick="copyContent()">Copy and share text</button>
+    <script>
+      let text = document.getElementById('share-text').innerText;
+      const copyContent = async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          console.log('Content copied to clipboard');
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        }
+      }
+    </script>
+
+<p>And here are some examples of what this infrastructure could look like:
   
   <h3>Events</h3>
 
       <div id='calendar'></div>
       <div id="popup"></div>
 
-      <p>Have calendars for events or groups, organizations, actions you want to share?  Just add the link <a>here!</a></p>
+      <p>Have event calendars you want to add, or wishes?  <a>Add them here!</a></p>
 
 
   <h3>Resources</h3>
@@ -109,8 +126,18 @@
   </div>
 
   <div class="card">
-    <h4>Ecosocial Game
+    <h4>Ecosocial Game</h4>
       <!-- <sub-title>via Instructables</sub-title> -->
+      <div></div>
+      <button onclick="loadiFrame(event);">Try playing</button>
+      <script>
+        function loadiFrame(event) {
+          console.log(event);
+          let element = event.srcElement;
+
+          element.previousElementSibling.innerHTML = `<iframe src="https://play.half.earth"></iframe>`
+        }
+      </script>
     </h4>
   </div>
 
@@ -127,9 +154,7 @@
   </div>
 <br>
 
-<p>Have resources you would add?  Put the details <a>here!</a></p>
-
-  <a href="">Add a resource</a>
+<p>Have resources you want to suggest, or wishes?  <a>Add details here!</a></p>
 
   </div>
 
@@ -165,9 +190,7 @@
 
   <br>
 
-  <p>Have curriculums or educational items you would add or suggest? Put the details <a>here!</a></p>
-
-  <a href="">Add a resource</a>
+  <p>Have curriculums or educational items you would suggest, or wishes? <a> Add details here!</a></p>
 
   <h3>Organizing locally, regionally, and beyond</h3>
 
