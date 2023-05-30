@@ -23,7 +23,7 @@ crossorigin=""/>
   <main>
     <h1>A cooperatively built social community, to build our worlds.</h1>
       <div>
-      <form class="" style="" hx-post="/.netlify/functions/saveEmail" hx-trigger="submit" hx-redirect="/success" _="on htmx:afterSwap call createProjectResponseHandler(event)">
+      <form class="" style="" hx-post="/.netlify/functions/signUp" hx-trigger="submit" hx-redirect="/success" _="on htmx:afterSwap call createProjectResponseHandler(event)">
 
         <fieldset class="visually-hidden" aria-hidden="true">
           <label for="last-name-subscribe-field">Last Name:</label>
@@ -60,6 +60,16 @@ crossorigin=""/>
           <div>
           <div id="map"></div>
           <p>Coordinates: { <span id="coordinates">21.41727, -37.44140</span> }</p>
+          <fieldset class="visually-hidden" aria-hidden="true">
+            <label for="latlng">latlng</label>
+            <input
+              id="latlng"
+              name="latlng"
+              autocomplete="off"
+              tabindex="-1"
+              value="{&quot;lat&quot;: 21.41727, &quot;lng&quot;: -37.44140}"
+            />
+          </fieldset>
           </div>
         </div>
 
@@ -89,6 +99,7 @@ crossorigin=""/>
               }
 
               document.getElementById('coordinates').innerText = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+              document.getElementById('latlng').value = `{ "lat": ${e.latlng.lat.toFixed(5)}, "lng": ${e.latlng.lng.toFixed(5)} }`;
           }
 
           map.on('click', onMapClick);
@@ -127,7 +138,7 @@ crossorigin=""/>
                     // }, 1000)
             } else {
                 const responseContainer = document.getElementById('response-container');
-                responseContainer.innerHTML = `<p>Submission error.  Please refreh and try again, or DM on Twitter.</p>`;
+                responseContainer.innerHTML = `<p>Submission error.  Please refresh and try again, or DM on Twitter.</p>`;
             }
         }
   </script>

@@ -36,9 +36,9 @@ exports.handler = async (event) => {
 	// If not, we've caught a bot!
 	if (form.last_name) {
 		return {
-			statusCode: 500,
+			statusCode: 505,
 			body: JSON.stringify({
-				status: 500,
+				status: 505,
 				message: "Honeypot triggered"
 			})
 		};
@@ -50,7 +50,8 @@ exports.handler = async (event) => {
         options: {
             data: {
               username: form.username,
-              email: form.email
+              email: form.email,
+              latlng: JSON.parse(form.latlng)
             }
           }
       })
