@@ -8,21 +8,24 @@
   <link rel="stylesheet" href="/styles.css">
 <script src="https://unpkg.com/htmx.org@1.8.6"></script>
 <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+crossorigin=""/>
+ <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
 <!-- <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js'></script> -->
 <!-- <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.8/index.global.min.js'></script> -->
 </head>
 <body>
   <main>
-    <h1>A cooperatively led social community, to build our worlds.</h1>
-    <p><em>From the ashes of those who flew too close to the sun. 🥲</em></p>
+    <h1>A cooperatively built social community, to build our worlds.</h1>
       <div>
       <form class="" style="" hx-post="/.netlify/functions/saveEmail" hx-trigger="submit" hx-redirect="/success" _="on htmx:afterSwap call createProjectResponseHandler(event)">
 
-            <label for="email"><strong>Enter your email to join the cooperative:</strong></label>
-            <input type="email" id="email" name="email" style="width: 300px; max-width: 100%;" required>
-            <br>
-            <fieldset class="visually-hidden" aria-hidden="true">
+        <fieldset class="visually-hidden" aria-hidden="true">
           <label for="last-name-subscribe-field">Last Name:</label>
           <input
             type="text"
@@ -32,7 +35,68 @@
             tabindex="-1"
           />
         </fieldset>
-            <button type="submit">Join Coop</button>
+
+        <div style="display: flex; gap: 20px; margin: auto; width: fit-content;">
+
+            <div style="margin: auto">
+              <label for="email"><strong>Email</strong></label>
+              <input type="email" id="email" name="email" style="width: 250px; max-width: 100%;" required>
+              </div>
+              
+              <!-- <div style="">
+                <div style="display: inline-block; margin-right: 10px;">
+                <label for="postal_code"><strong>Postal code</strong></label>
+                <input type="number" id="postal_code" name="postal_code" style="width: 100px; max-width: 100%;">
+                </div>
+
+                <div style="display: inline-block;">
+                <label for="country"><strong>Country</strong></label>
+                <input type="text" id="country" name="country" style="width: 50px; max-width: 100%;">
+                </div>
+              <p style="display: block;"><em>Optional (If you want to connect with others in your area).</em></p>
+              </div>
+          </div> -->
+
+          <div>
+          <div id="map"></div>
+          <p>Coordinates: { <span id="coordinates">21.41727, -37.44140</span> }</p>
+          </div>
+        </div>
+
+        <script>
+          
+          var map = L.map('map').setView([30.505, -15], 1);
+          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+
+          var popup = L.popup();
+          var marker = L.marker([21.417, -37.441]).addTo(map);
+
+
+          function onMapClick(e) {
+
+            console.log(e);
+            console.log(e.latlng);
+
+              marker
+                  .setLatLng(e.latlng)
+                  .addTo(map);
+
+              if (map.getZoom() < 6) {
+
+              map
+                .setView(e.latlng, 6);
+
+              }
+
+              document.getElementById('coordinates').innerText = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+          }
+
+          map.on('click', onMapClick);
+        </script>
+
+          <br>
+          <br>
+            <button type="submit" style="font-size: 24px; cursor: pointer;">Join Coop</button>
         </form>
         </main>
 </body>

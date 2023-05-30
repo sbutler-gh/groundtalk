@@ -53,3 +53,9 @@ margin: auto;
     box-shadow: 3px 2px 5px 1px grey;
     border-radius: 7px;
   }
+
+  a {
+    text-decoration-style: solid;
+    text-underline-offset: 1.5px;
+  }
+  #map { height: 300px; width: 500px; }
