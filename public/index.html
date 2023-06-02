@@ -3,7 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- OpenGraph Tags -->
+
+  <!-- Title Tags -->
   <title>Shape the story</title>
+  <meta property="og:title" content="LinkedIn: Log In or Sign Up">
+  <meta name="twitter:title" content="LinkedIn: Log In or Sign Up">
+
+  <!-- Description Tags -->
+  <meta name="description" content="">
+  <meta property="og:description" content="750 million+ members | Manage your professional identity. Build and engage with your professional network. Access knowledge, insights and opportunities.">
+  <meta name="twitter:description" content="750 million+ members | Manage your professional identity. Build and engage with your professional network. Access knowledge, insights and opportunities.">
+
+
+  <!-- URL Tags -->
+  <meta property="og:url" content="https://linkedin.com">
+  <meta property="twitter:url" content="https://linkedin.com">
+  <meta property="twitter:domain" content="linkedin.com">
+
+  <!-- Image Tags -->
+  <meta property="og:image" content="https://static.licdn.com/scds/common/u/images/logos/favicons/v1/favicon.ico">
+  <meta name="twitter:image" content="https://static.licdn.com/scds/common/u/images/logos/favicons/v1/favicon.ico">
+
+    <!-- Other Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:type" content="website">
+    
+  <!-- END OPENGRAPH TAGS -->
+
+
+
   <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css">
   <link rel="stylesheet" href="/styles.css">
 <script src="https://unpkg.com/htmx.org@1.8.6"></script>
@@ -21,7 +51,7 @@ crossorigin=""/>
 </head>
 <body>
   <main id="initial">
-    <h1>A cooperatively built social community, to build our worlds.</h1>
+    <h1>A cooperatively built social community, to build our worlds and movements.</h1>
       <div>
       <form class="" style="" hx-post="/.netlify/functions/signUp" hx-trigger="submit" _="on htmx:afterSwap call createProjectResponseHandler(event)">
 
@@ -58,6 +88,7 @@ crossorigin=""/>
           </div> -->
 
           <div>
+            <p><em>Select your general location<br>to help us organize</em></p>
           <div id="map"></div>
           <p>Coordinates: { <span id="coordinates">21.41727, -37.44140</span> }</p>
           <fieldset class="visually-hidden" aria-hidden="true">

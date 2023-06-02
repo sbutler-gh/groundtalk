@@ -12,11 +12,12 @@ display: block;
 margin: auto;
 }
 
-.cards-container {
+.cards-container, .columns-container {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
+    margin: auto;
   }
   
   /* Individual project cards */
@@ -59,3 +60,16 @@ margin: auto;
     text-underline-offset: 1.5px;
   }
   #map { height: 300px; width: 500px; }
+
+  .card ul {
+    text-align: left;
+  }
+
+  .columns-container {
+    width: fit-content;
+  }
+
+  .columns-container div {
+    text-align: left;
+    max-width: 300px;
+  }
