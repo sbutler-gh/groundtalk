@@ -49,9 +49,29 @@ crossorigin=""/>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js'></script> -->
 <!-- <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.8/index.global.min.js'></script> -->
 </head>
-<body>
+<body style="padding: 1em;">
   <main id="initial">
-    <h1>A cooperatively built social community, to build our worlds and movements.</h1>
+    <!-- <h1>Trans-local infrastructures and new worlds.</h1>
+    <blockquote style="border: none;">“The world's vanguard infrastructure is failing in today's climate, which is the most benign we will ever see again" — David Wallace Wells
+    </blockquote>
+    <p>We need to build new infrastructures and tools.   Re-connect with old practices.   Make the worlds we want to live in — like the worlds of our ancestors, and like the worlds we want to pass on.</p>
+    <p>The way we make this happen is together.</p>
+    <p><strong>Want to take part?</strong></p>
+    <details><summary>Read more</summary></details> -->
+    <h1>Infrastructure and seeds for our worlds.</h1>
+    <p>Twitter is dying.  Reddit is dying.  Our infrastructure and services are crumbling.  Our planet is dying.</p>
+    <p><em>"The world's vanguard infrastructure is failing in today's climate, which is the most benign we will ever see again"</em> — David Wallace Wells.</p>
+    <p>
+
+If we want tools and technology, food and energy, water and resilience, mobility and logistics in our lives, we have to make them.</p>
+
+<p>If we want new cultures, old practices, seeds for the future, we have to grow them.<br>
+
+<p>Do you want to build infrastructures for the worlds we live in?  Do you want to plant seeds for the future?  Add your email and location in the world below, together.<br>
+
+<p>And we’ll get to work.
+
+    </p>
       <div>
       <form class="" style="" hx-post="/.netlify/functions/signUp" hx-trigger="submit" _="on htmx:afterSwap call createProjectResponseHandler(event)">
 
@@ -66,7 +86,7 @@ crossorigin=""/>
           />
         </fieldset>
 
-        <div style="display: flex; gap: 20px; margin: auto; width: fit-content;">
+        <div class="map-container" style="display: flex; gap: 20px; margin: auto; width: fit-content;">
 
             <div style="margin: auto">
               <label for="email"><strong>Email</strong></label>
@@ -89,7 +109,7 @@ crossorigin=""/>
 
           <div>
             <p><em>Select your general location<br>to help us organize</em></p>
-          <div id="map"></div>
+          <div id="map" class=""></div>
           <p>Coordinates: { <span id="coordinates">21.41727, -37.44140</span> }</p>
           <fieldset class="visually-hidden" aria-hidden="true">
             <label for="latlng">latlng</label>
@@ -137,8 +157,7 @@ crossorigin=""/>
         </script>
 
           <br>
-          <br>
-            <button type="submit" style="font-size: 24px; cursor: pointer;">Join Coop</button>
+            <button type="submit" style="font-size: 24px; cursor: pointer;">Submit</button>
         </form>
         </main>
         <section id="success">

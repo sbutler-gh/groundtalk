@@ -73,3 +73,13 @@ margin: auto;
     text-align: left;
     max-width: 300px;
   }
+
+  @media only screen and (max-width: 600px) {
+    .map-container {
+      display: block !important;
+      width: 100% !important
+    }
+    #map {
+      width: 100% !important;
+    }
+  }
