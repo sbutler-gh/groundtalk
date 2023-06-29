@@ -12,66 +12,17 @@ display: block;
 margin: auto;
 }
 
-.cards-container, .columns-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    margin: auto;
-  }
-  
-  /* Individual project cards */
-  .card {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    width: 300px;
-  }
-  
-  /* Project card heading */
-  .card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Project card paragraphs */
-  .card p {
+* {
+  font-family: Arial, Helvetica, sans-serif
+}
 
-  }
-
-  #popup {
-    position: absolute;
-    display: none; 
-    border: solid 1px black; 
-    max-width: 300px;
-    z-index: 100;
-    background: aliceblue;
-    max-height: 200px;
-    overflow: scroll;
-    padding: 1rem;
-    box-shadow: 3px 2px 5px 1px grey;
-    border-radius: 7px;
-  }
+button:hover {
+  cursor: pointer;
+}
 
   a {
     text-decoration-style: solid;
     text-underline-offset: 1.5px;
-  }
-  #map { height: 300px; width: 500px; }
-
-  .card ul {
-    text-align: left;
-  }
-
-  .columns-container {
-    width: fit-content;
-  }
-
-  .columns-container div {
-    text-align: left;
-    max-width: 300px;
   }
 
   @media only screen and (max-width: 600px) {
@@ -82,4 +33,74 @@ margin: auto;
     #map {
       width: 100% !important;
     }
+
+    .header h2{
+      font-size: 1.3em;
+      line-height: normal;
+    }
+    .header h1{
+      font-size: 1.7em;
+      line-height: normal;
+      margin-top: -11px !important;
+    }
+
   }
+
+
+.cards-container, .columns-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: auto;
+}
+
+/* Individual project cards */
+.card {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  width: 300px;
+}
+
+/* Project card heading */
+.card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Project card paragraphs */
+.card p {
+
+}
+
+#popup {
+  position: absolute;
+  display: none; 
+  border: solid 1px black; 
+  max-width: 300px;
+  z-index: 100;
+  background: aliceblue;
+  max-height: 200px;
+  overflow: scroll;
+  padding: 1rem;
+  box-shadow: 3px 2px 5px 1px grey;
+  border-radius: 7px;
+}
+
+#map { height: 300px; width: 500px; }
+
+.card ul {
+  text-align: left;
+}
+
+.columns-container {
+  width: fit-content;
+}
+
+.columns-container div {
+  text-align: left;
+  max-width: 300px;
+}

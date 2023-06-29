@@ -4,96 +4,63 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shape the story</title>
-  <link rel="stylesheet" href="/styles.css">
       <!-- <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css"> -->
-      <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css">
-      <link rel="stylesheet" href="/styles.css">
-  <script src="https://unpkg.com/htmx.org@1.8.6"></script>
-  <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
-  <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
-  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js'></script>
+      <!-- <link rel="stylesheet" href="https://unpkg.com/missing.css@1.0.9/dist/missing.min.css"> -->
+  <!-- <script src="https://unpkg.com/htmx.org@1.8.6"></script>
+  <script src="https://unpkg.com/hyperscript.org@0.9.7"></script> -->
+  <!-- <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js'></script> -->
   <!-- <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/icalendar@6.1.8/index.global.min.js'></script> -->
-  <script type='text/javascript'  type="module">
+  <style>
 
-    async function fetchAsync (url) {
-      let response = await fetch(url);
-      let data = await response.json();
-      return renderCalendar(data);
-    }
-    
-    
-    document.addEventListener('DOMContentLoaded', function() {
-          
-          fetchAsync('/.netlify/functions/insertEvents')
-      });
-    
-      function renderCalendar(data) {
-    
-        const calendarEl = document.getElementById('calendar')
-        console.log('rendering');
-    
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          googleCalendarApiKey: data,
-          // initialView: 'listWeek',
-          eventSources: [
-            {
-              googleCalendarId: '72dh5ehol3oufbkusqagta0qf8@group.calendar.google.com'
-            },
-            // {
-            // url: 'https://350santafe.org/events/?ical=1.ics',
-            // format: 'ics'
-            // }
-            // {
-            //   googleCalendarId: 'efgh5678@group.calendar.google.com',
-            //   className: 'nice-event'
-            // }
-          ],
-          eventMouseEnter: function(info) {
+.visually-hidden {
+position: absolute;
+left: -9999px;
+}
+main {
+margin: auto;
+text-align: center;
+}
+input {
+display: block;
+margin: auto;
+}
 
-            const popup = document.getElementById('popup');
-            
-            popup.innerHTML = `<span onclick={popup.style.display="none"} style="position: absolute; top: 2%; left: 3%; cursor: pointer;">x</span><h4>${info.event.title}</h4><sub-title><em>${info.event.start}</em></sub-title><p>${info.event.extendedProps.description}`
+* {
+  font-family: Arial, Helvetica, sans-serif
+}
 
-              Object.assign(popup.style, {
-            left: `${info.jsEvent.pageX}px`,
-            top: `${info.jsEvent.pageY}px`,
-            display: 'block'
-            })
-
-            console.log(popup);
-            },
-        });
-    
-        calendar.render();
-      }
-    </script>
+button:hover {
+  cursor: pointer;
+}
+  </style>
 </head>
 <body>
   <main style="max-width: 100%;">
+    <div style="position: relative; max-width: 640px; margin: auto;">
+      <img src="./groundtalk2.svg" style="max-width: 640px;">
+          <div class="header" style="position: absolute; top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%); width: 100%;">
+        <h2 style="font-weight: 400;">A cooperative social network,<br>to realize our worlds.</h2>
+        <h1 style="margin-top: 15px;">groundtalk.land</h1>
+        </div>
+      </div>
 <section style="max-width: 800px; margin: auto;">
-<h2>You're in!</h2>
+<h2>Welcome!</h2>
 
-<p>The power in Twitter was our communities.  If we want to change stories and build movements, we have to grow <em>us</em> again.
-    
-<p>So ask others to join this with you — because <strong><em>you own it too.</em></strong>
+<p>The power of the Internet is our communities.  If we want to change stories, build movements, and connect, we have to grow <em>us</em> again.</p>
 
-  <p><strong>And that's why this will be different.</strong></p>
+<p>So ask others to join this with you —&nbsp;because <strong><em>you lead it too.</em></strong></p>
 
-  <p>Here's the text you can share with others — on social media, email, text, posters — to help them find this cooperative and make this happen together:
+<p><strong>And that's why this will be different.</strong></p>
 
-    <!-- <blockquote id="share-text" style="text-align: left; max-width: 500px; margin: auto; border: solid 1px lightgrey;">
-      <p>Want to join a cooperatively built social community and movement infrastructure hub?</p>
-      <p>A place we cooperatively own and shape, so we never need to build and abandon our “public” square again.
-      <p>Filled with learning, art and stories, events and gatherings, and community and movement infrastructure to make the changes we want to see in the world.
-    </blockquote> -->
-    <blockquote id="share-text" style="text-align: left; max-width: 500px; margin: auto; border: solid 1px lightgrey;">
-      <p>Want to join a cooperative social community + movement infrastructure hub?</p>
-      <p>A zone we cooperatively own + shape, so we never need to abandon the "public" square again
-      <p>Filled with resources, learning, arts + stories, tools and organizing for our movements
-      <p>[INSERT URL]
-    </blockquote>
+<p><button onclick="copyContent()">Invite people you want</button> involved, and share with your folks on <a href="mailto:">email</a>, <a>Twitter</a>, <a>LinkedIn</a>, <a>Mastodon</a>, and <a>Reddit</a>. </p>
+
+<p>Want to introduce and connect with others who are interested?  Join the <a href="">chat forum.</a></p>
+
+<p>Want to help build a library of resources — stories, games, events, education, tools, art, collections —&nbsp;to back them up for resiliency?  <a href="">Add to the library.</a></p>
     <br>
-    <button onclick="copyContent()">Copy and share text</button>
     <script>
       let text = document.getElementById('share-text').innerText;
       const copyContent = async () => {
@@ -106,209 +73,16 @@
       }
     </script>
 
-<p>And here are some examples of what this infrastructure could look like:
+<!-- <p>And here are some examples of what this infrastructure could look like:
   
   <h3>Events</h3>
 
       <div id='calendar'></div>
       <div id="popup"></div>
 
-      <p>Have event calendars you want to add, or wishes?  <a>Add them here!</a></p>
+      <p>Have event calendars you want to add, or wishes?  <a>Add them here!</a></p> -->
     
     </section>
-
-  
-      <h3>Resources, Education, Stories, Organizing, Priorities</h3>
-
-      <div class="columns-container" style="max-width: 100vw">
-
-        <div class="">
-          <h4>Resources
-            <ul>
-              <li><a href="https://threadreaderapp.com/thread/1570122141525512192.html">Hugelkultur Bed Tutorial</a></li>
-              <li><a href="">Half-Earth Socialism: The Game</a></li>
-              <li><a href="">Community Mapping Workshop</a></li>
-              <li><a href="">Anti-Racist Facilitation Guide for Co-op Development</a></li>
-              <li><a href="">Open-source Trash Recycler</a></li>
-            </ul>
-          </h4>
-        </div>
-
-        <div class="">
-          <h4>Education
-            <ul>
-              <li><a href="">Good Grief Project (Climate)</a></li>
-              <li><a href="">Mexican Indigenous History</a></li>
-              <li><a href="http://speculatingfutures.club/">Speculating Futures Syllabus</a></li>
-            </ul>
-          </h4>
-        </div>
-
-        <!-- <div class="">
-          <h4>Stories
-            <ul>
-              <li><a href="">El Señor Durito y Yo (Zapatistas)</a></li>
-              <li><a href=""></a></li>
-              <li><a href="http://speculatingfutures.club/"></a></li>
-            </ul>
-          </h4>
-        </div> -->
-
-        <!-- <div class="card">
-          <h4>Stories
-            <ul>
-              <li><a href="">El Señor Durito y Yo (Zapatistas)</a></li>
-              <li><a href=""></a></li>
-              <li><a href="http://speculatingfutures.club/"></a></li>
-            </ul>
-          </h4>
-        </div> -->
-
-        <!-- <div class="card">
-          <h4>Games
-            <ul>
-              <li><a href="">El Señor Durito y Yo (Zapatistas)</a></li>
-              <li><a href="">Silver Spook</a></li>
-              <li><a href="http://speculatingfutures.club/"></a></li>
-            </ul>
-          </h4>
-        </div> -->
-
-        <div class="">
-          <h4>Organizing
-            <ul>
-              <!-- <li>Food sovereignty, land sovereignty, smallholder farms and land tenure</li>
-              <li>Tenant Unions</li>
-              <li>COVID Protections</li>
-              <li>Fight and build</li>
-              <li>People and worker-owned cooperatives</li> -->
-              <li><a href="">People's Tribunal</a></li>
-              <li><a href="">People's CDC (COVID Protections)</a></li>
-              <li><a href="">Democratic Socialists of America</a></li>
-              <li><a href="">Tenant Unions</a></li>
-              <li><a href="">Debt Collectives</a></li>
-              <li><a href="">Unions</a></li>
-              <li><a href="">Local cooperatives</a></li>
-            </ul>
-          </h4>
-        </div>
-
-        <div class="">
-          <h4>Priorities
-            <ul>
-              <!-- <li>Food sovereignty, land sovereignty, smallholder farms and land tenure</li>
-              <li>Tenant Unions</li>
-              <li>COVID Protections</li>
-              <li>Fight and build</li>
-              <li>People and worker-owned cooperatives</li> -->
-              <li><a href="">Stop Deep Sea Mining</a></li>
-              <li><a href="">Food/Land Sovereignty</a></li>
-              <li><a href="">Halt Fossil Fuel Development</a></li>
-              <li><a href="">Reduce car dependency --> degrowth</a></li>
-            </ul>
-          </h4>
-        </div>
-
-      </div>
-
-      <p>Have items to add or suggest here?  <a>Add details here!</a></p>
-      <!-- <p>Have your own ideas to share?  Paste them below. -->
-
-
-
-  <!-- <h3>Resources</h3>
-
-  <div class="cards-container">
-  <div class="card">
-    <h4>Hugelkultur Bed Tutorial
-      <sub-title>by @TheLastFarm</sub-title>
-    </h4>
-  </div>
-
-  <div class="card">
-    <h4>DIY Air Filter Build
-    </h4>
-  </div>
-
-  <div class="card">
-    <h4>Ecosocial Game</h4>
-      <div></div>
-      <button onclick="loadiFrame(event);">Try playing</button>
-      <script>
-        function loadiFrame(event) {
-          console.log(event);
-          let element = event.srcElement;
-
-          element.previousElementSibling.innerHTML = `<iframe src="https://play.half.earth"></iframe>`
-        }
-      </script>
-    </h4>
-  </div>
-
-  <div class="card">
-    <h4>DIY Solar Water Heater Build
-      <sub-title>by OpenSourceLowTech.org</sub-title>
-    </h4>
-  </div>
-
-  <div class="card">
-    <h4>Open-source Trash Recycler
-      <sub-title>by Sam Smith (Magic Tool Bus)</sub-title>
-    </h4>
-  </div>
-<br>
-
-<p>Have resources you want to suggest, or wishes?  <a>Add details here!</a></p>
-
-  </div>
-
-  <h3>Education + Curriculums</h3>
-
-  <div class="cards-container">
-
-    <div class="card">
-      <h4>Community Mapping Workshop
-        <sub-title>Introduction to Bioregions and Local Watersheds</sub-title>
-      </h4>
-    </div>
-
-  <div class="card">
-    <h4>Community Mapping Workshop
-      <sub-title>Introduction to Bioregions and Local Watersheds</sub-title>
-    </h4>
-  </div>
-
-  <div class="card">
-    <h4>Grassroots Theatre Workshop
-      <sub-title>Introduction to Bioregions and Local Watersheds</sub-title>
-    </h4>
-  </div>
-
-  <div class="card">
-    <h4>Anti-Racist Facilitation Guide for Co-op Development
-      <sub-title>by Solidarity Resource</sub-title>
-    </h4>
-  </div>
-  
-  </div>
-
-  <br>
-
-  <p>Have curriculums or educational items you would suggest, or wishes? <a> Add details here!</a></p>
-
-  <h3>Organizing locally, regionally, and beyond</h3> -->
-
-
-
-<!-- <p>In terms of next steps, once enough people have signed up with interest, we'll probably organize some online events to gather and connect further.</p>
-
-
-
-<p>Like, you'll</p>
-
-<p>The power in Twitter was our communities.  The power in streaming was expanding our access to art and stories.</p>
-
-<p>Whatever this becomes, you're part of it now.</p> -->
 </main>
 </body>
 </html>
