@@ -53,8 +53,13 @@ margin: auto;
 button:hover {
   cursor: pointer;
 }
+
+  .swap p {
+    margin-bottom: 25px;
+  }
   </style>
   <script src="https://unpkg.com/htmx.org@1.8.6"></script>
+  <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
 </head>
 <body>
   <main id="initial">
@@ -85,29 +90,34 @@ button:hover {
         </fieldset>
 
         <p>Want a network for ourselves — built for low-energy and resilience, led by workers and people, and in service of the worlds we want to make?</p>
-        <p>Join with your contact below to get started.</p>
+        <p style="margin-bottom: 30px;">Join with your contact below to get started. <a href="/success">(Already joined?)</a></p>
 
-            <div style="margin: auto">
-              <label for="email"><strong>Email</strong></label>
-              <input type="email" id="email" name="email" style="width: 250px; max-width: 100%;" required>
+        <div style="display: flex; margin: auto; width: fit-content">
+            <div style="margin-right: 20px;">
+                <label for="email"><strong>Email*</strong></label>
+                <input type="email" id="email" name="email" style="width: 250px; max-width: 100%;" required>
               </div>
-              
-              <!-- <div style="">
-                <div style="display: inline-block; margin-right: 10px;">
-                <label for="postal_code"><strong>Postal code</strong></label>
-                <input type="number" id="postal_code" name="postal_code" style="width: 100px; max-width: 100%;">
-                </div>
 
-                <div style="display: inline-block;">
-                <label for="country"><strong>Country</strong></label>
-                <input type="text" id="country" name="country" style="width: 50px; max-width: 100%;">
+              <div style="">
+                <label for="location"><strong>Location (Optional)</strong></label>
+                <input id="location" name="location" style="width: 250px; max-width: 100%;">
                 </div>
-              <p style="display: block;"><em>Optional (If you want to connect with others in your area).</em></p>
-              </div>
-          </div> -->
+<!-- 
+              <div style="">
+                    <div style="display: inline-block; margin-right: 10px;">
+                    <label for="city"><strong>City</strong></label>
+                    <input id="city" name="city" style="width: 100px; max-width: 100%;">
+                    </div>
+
+                    <div style="display: inline-block;">
+                    <label for="country"><strong>Country</strong></label>
+                    <input id="country" name="country" style="width: 50px; max-width: 100%;">
+                    </div>
+              </div> -->
+          </div>
+          <br>
+          <button type="submit" style="font-size:20px; cursor: pointer;">Submit</button>
         </div>
-
-            <button type="submit" style="font-size:20px; cursor: pointer;">Submit</button>
         </form>
         <br>
         <br>

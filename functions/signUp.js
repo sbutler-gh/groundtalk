@@ -51,7 +51,8 @@ exports.handler = async (event) => {
             data: {
               username: form.username,
               email: form.email,
-              latlng: JSON.parse(form.latlng)
+              location: form.location,
+              project: "groundtalk"
             }
           }
       })
@@ -65,6 +66,7 @@ exports.handler = async (event) => {
     console.log(JSON.stringify(data))
 
     let swap = `
+    <div class="swap" style="max-width: 600px; margin: auto;">
   <h2>Welcome!</h2>
 
   <p><em><strong>${data.user.email}</strong><br> registered at ${data.user.email_confirmed_at}</em></p>
@@ -78,7 +80,7 @@ exports.handler = async (event) => {
   
   <p>Want to introduce and connect with others who are interested?  Join the <a href="">chat forum.</a></p>
   
-  <p>Want to help build a library of resources — stories, games, events, education, tools, art, collections —&nbsp;to back them up for resiliency?  <a>Add to the library.</a></p>
+  <p>Want to help build a library of resources — stories, games, events, education, tools, art, collections —&nbsp;to back them up for resiliency?  <a href="">Add to the library.</a></p>
 
   </div>
 
