@@ -138,4 +138,23 @@ button:hover {
             }
         }
   </script>
+    <script>
+      let text = `We need low and resilient infrastructures.  We need our own social media and networks, if we want them.
+
+And we need to organize to make it happen.
+
+Want a network for ourselves — built for low-energy and resilience, led by workers and people, in service of the worlds we want to make?
+
+Join to get involved, at one of the smallest websites on the Internet:
+
+https://groundtalk.land`
+      const copyContent = async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          console.log('Content copied to clipboard');
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        }
+      }
+    </script>
 </html>
