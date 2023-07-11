@@ -1,0 +1,139 @@
+<script src="https://unpkg.com/htmx.org@1.8.6"></script>
+
+<form class="" style="" hx-post="/.netlify/functions/postMessage" hx-trigger="submit" _="on htmx:afterSwap call logData(event)">
+    <textarea name="txt" width="400" height="300"></textarea><br><br>
+<button>Submit</button>
+</form>
+
+<div id="feed" hx-get="/.netlify/functions/getMessages" hx-trigger="load">
+
+</div>
+
+<!-- <button onclick="start()">start</button> -->
+
+<script>
+
+    function logData(event) {
+            console.log(event);
+            const xhr = event.detail.xhr;
+    }   
+
+function start() {
+    
+        var twitter = window.open(`https://twitter.com/intent/tweet?hashtags=quote&text="I begin by taking. I shall find scholars later to demonstrate my perfect right.", Frederick (II) the Great`, 'twitter','width=500,height=500');
+
+
+        setTimeout(function() {
+
+           alert('hey');
+
+        // twitter.document.querySelector(`[data-testid="tweetButton"] > .css-901oao > .css-901oao > .css-901oao`).click()
+
+        }, 5000)
+
+        twitter.onload = function() {
+
+        // var tweetInput = twitterWindow.document.querySelector('[name="tweet"]');
+        // tweetInput.value = text;
+
+        // alert('load')
+
+        // Find the Tweet button and click it
+        // var tweetButton = twitterWindow.document.querySelector('[data-testid="tweetButton"]');
+        // tweetButton.click();
+        }
+
+
+//         function composeTweet(text) {
+//   // Open a new window
+//   var twitterWindow = window.open("https://twitter.com/compose/tweet", "_blank");
+
+//   // Wait for the window to load
+//   twitterWindow.onload = function() {
+//     // Find the text input field and set its value
+//     var tweetInput = twitterWindow.document.querySelector('[name="tweet"]');
+//     tweetInput.value = text;
+
+//     // Find the Tweet button and click it
+//     var tweetButton = twitterWindow.document.querySelector('[data-testid="tweetButtonInline"]');
+//     tweetButton.click();
+//   };
+// }
+
+// Usage example
+// composeTweet("Hello, world!");
+
+
+
+
+        // alert("page fully loaded");
+
+        // let tweetButton = null;
+
+        // twitter.document.querySelectorAll(`data-testid[tweetButton]`)[0].onload() = (event) => {
+        //     alert('hey');
+        // }
+
+        // while (tweetButton == null) {
+        //     if (twitter.document.querySelectorAll(`data-testid[tweetButton]`)[0]) {
+        //         twitter.console.log('not null');
+        //         tweetButton = twitter.document.querySelectorAll(`data-testid[tweetButton]`)[0];
+        //         twitter.alert('not null');
+        //     }
+        // }
+
+        // twitter.onload = (event) => {
+        //     console.log("page fully loaded");
+        // };
+
+        // twitter.addEventListener("load", (event) => {
+
+        //     alert("page fully loaded");
+
+        // })
+    
+
+            // twitter.document.querySelectorAll(`data-testid="tweetButton"`)[0].click
+        // twitter.document.onload()
+
+        // getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].innerHTML = `<span data-offset-key="fjigd-0-0"><span data-text="true">test</span></span>`
+
+    }
+
+// function text() {
+
+
+//     // openTab().then({
+//     //     function(){
+//     //         twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].firstChild.click();
+//     //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].firstChild.focus();
+
+
+//     //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].innerHTML = `<span data-offset-key="fjigd-0-0"><span data-text="true">test</span></span>`
+//     //     }
+//     // })
+
+// };
+
+    // function replaceHTML() {
+    //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].firstChild.click();
+    //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].firstChild.focus();
+
+
+    //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].innerHTML = `<span data-offset-key="fjigd-0-0"><span data-text="true">test</span></span>`
+
+    // }
+</script>
+
+<style>
+    div.post {
+        background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%;
+    }
+    p.by {
+        font-weight: 600;
+    }
+    p.ts {
+        font-style: italic;
+        font-size: 12px;
+    }
+</style>
