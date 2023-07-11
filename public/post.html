@@ -1,11 +1,12 @@
 <script src="https://unpkg.com/htmx.org@1.8.6"></script>
+<script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
 
 <form class="" style="" hx-post="/.netlify/functions/postMessage" hx-trigger="submit" _="on htmx:afterSwap call logData(event)">
     <textarea name="txt" width="400" height="300"></textarea><br><br>
 <button>Submit</button>
 </form>
 
-<div id="feed" hx-get="/.netlify/functions/getMessages" hx-trigger="load">
+<div id="feed" hx-get="/.netlify/functions/getMessages" hx-trigger="" _="on htmx:afterSwap call logData(event)">
 
 </div>
 
@@ -13,9 +14,60 @@
 
 <script>
 
+    // check storage for posts
+    // find latest timestamp
+    // check for supabase messages later than timestamp
+    // retrieve
+    // add to local storage
+
+    function loadCacheThenGetMessages() {
+
+        let ts = 0;
+
+        if (localStorage.cache) {
+            document.getElementById('feed').innerHTML = localStorage.cache;
+            console.log('found');
+            // retrieving the latest message (first in array, sorted by reverse chronological order)
+            // we will only retrieve later messages then this from the database
+            // getMessages(document.getElementsByClassName("ts")[0].innerText)
+            ts = document.getElementsByClassName("ts")[0].innerText;
+        }
+
+            const xhr = new XMLHttpRequest();
+            const url = `/.netlify/functions/getMessages/?ts=${ts}`
+
+            xhr.open("GET", url);
+
+            xhr.onload = function () {
+                console.log(xhr.response);
+                document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML
+                localStorage.setItem('cache', document.getElementById('feed').innerHTML);
+            };
+            xhr.onerror = function () {
+                // ...handle/report error...
+            };
+
+            xhr.send();
+
+
+        // let url = `${window.location.origin}/.netlify/functions/getMessages/}`;
+        // console.log(url);
+
+        // async function fetchAsync (url) {
+        //     console.log('fetching');
+        //     let response = await fetch(url);
+        //     let data = await response.json();
+        //     return data;
+        //  }
+    }
+
+    loadCacheThenGetMessages();
+
     function logData(event) {
             console.log(event);
             const xhr = event.detail.xhr;
+            // localStorage.setItem('cache', document.getElementById('feed').innerHTML);
+            // console.log(localStorage.cache);
     }   
 
 function start() {
