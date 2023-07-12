@@ -14,12 +14,14 @@ exports.handler = async (event) => {
     }
 
     console.log(event.queryStringParameters.ts);
-    // console.log(event.httpMethod);
     let ts = event.queryStringParameters.ts.substring(0,26);
     console.log(ts);
 
+    // ts is 0 by default.  if it's *not* 0, that means there was message(s) found in the cache, and ts equals the timestamp of the latest message in the cache (#0 in the array)
+
     if (ts != 0) {
 
+        // selecting all messages "greater than" the timestamp value, which means everything posted after the current timestamp
         let { data: messages, error } = await supabase
         .from('messages')
         .select('*')
@@ -36,11 +38,11 @@ exports.handler = async (event) => {
             let swap = "";
         
             for (var i= messages.length - 1; i >= 0; i--) {
-                swap = swap + `<div class="post">
+                swap = swap + `<div id=${messages[i].id} class="post">
                     <p class="by">${messages[i].by}
                     <p class="ts">${messages[i].ts}
-                    <p>${messages[i].txt}
-                </div><br>`
+                    <p class="txt">${messages[i].txt}
+                </div>`
             }
         
             return {
@@ -50,6 +52,8 @@ exports.handler = async (event) => {
           }
 
     }
+
+    // if ts=0 (default value), we retrieve all the messages from the database
     else {
         let { data: messages, error } = await supabase
         .from('messages')
@@ -66,11 +70,11 @@ exports.handler = async (event) => {
             let swap = "";
         
             for (var i= messages.length - 1; i >= 0; i--) {
-                swap = swap + `<div class="post">
+                swap = swap + `<div id=${messages[i].id} class="post">
                     <p class="by">${messages[i].by}
                     <p class="ts">${messages[i].ts}
-                    <p>${messages[i].txt}
-                </div><br>`
+                    <p class="txt">${messages[i].txt}
+                </div>`
             }
         
             return {

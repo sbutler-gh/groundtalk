@@ -14,33 +14,36 @@
 
 <script>
 
-    // check storage for posts
-    // find latest timestamp
-    // check for supabase messages later than timestamp
-    // retrieve
-    // add to local storage
-
     function loadCacheThenGetMessages() {
 
+        // ts = timestamp
+        // we will append this as a query parameter to the GET request, to indicate which messages (if any) to retrieve in the backend
+        // because some messages may already be cached locally, as a way of lowering the amount of requests and repeated data transfers
         let ts = 0;
 
         if (localStorage.cache) {
+
+            // setting the feed to all of the messages in the cache
             document.getElementById('feed').innerHTML = localStorage.cache;
-            console.log('found');
-            // retrieving the latest message (first in array, sorted by reverse chronological order)
-            // we will only retrieve later messages then this from the database
-            // getMessages(document.getElementsByClassName("ts")[0].innerText)
+
+            // Set the timestamp value equal to the timestamp value of the latest message in the cache.
             ts = document.getElementsByClassName("ts")[0].innerText;
         }
 
             const xhr = new XMLHttpRequest();
+
+            // adding timestamp value as query parameter
             const url = `/.netlify/functions/getMessages/?ts=${ts}`
 
             xhr.open("GET", url);
 
             xhr.onload = function () {
                 console.log(xhr.response);
+
+                // appending the messages retrieved from the DB to the top of the feed
                 document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML
+
+                // and updating the message cache with the updated version of the feed
                 localStorage.setItem('cache', document.getElementById('feed').innerHTML);
             };
             xhr.onerror = function () {
@@ -48,17 +51,6 @@
             };
 
             xhr.send();
-
-
-        // let url = `${window.location.origin}/.netlify/functions/getMessages/}`;
-        // console.log(url);
-
-        // async function fetchAsync (url) {
-        //     console.log('fetching');
-        //     let response = await fetch(url);
-        //     let data = await response.json();
-        //     return data;
-        //  }
     }
 
     loadCacheThenGetMessages();
@@ -66,9 +58,10 @@
     function logData(event) {
             console.log(event);
             const xhr = event.detail.xhr;
-            // localStorage.setItem('cache', document.getElementById('feed').innerHTML);
-            // console.log(localStorage.cache);
     }   
+
+
+//  this function below is a work-in-progress, for local automated cross-posting
 
 function start() {
     
@@ -179,7 +172,7 @@ function start() {
 
 <style>
     div.post {
-        background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%;
+        background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%; margin-bottom: 0.75em;
     }
     p.by {
         font-weight: 600;

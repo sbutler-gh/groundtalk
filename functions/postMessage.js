@@ -15,8 +15,6 @@ exports.handler = async (event) => {
   
     const form = querystring.parse(event.body);
     console.log(form);
-    // console.log(form['email']);
-    // console.log(form.email);
 
     const { data, error } = await supabase
     .from("messages")
@@ -30,10 +28,10 @@ exports.handler = async (event) => {
     };
   } else {
     // let swap = `<p style="color: green"><em>Success!</em>
-    let swap = `<div class="post">
+    let swap = `<div id=${data[0].id} class="post">
     <p class="by">${data[0].by}
     <p class="ts">${data[0].ts}
-    <p>${form.txt}
+    <p class="txt">${form.txt}
     </div>`;
     return {
       statusCode: 200,
