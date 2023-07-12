@@ -1,12 +1,28 @@
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="https://unpkg.com/htmx.org@1.8.6"></script>
 <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
+</head>
 
-<form class="" style="" hx-post="/.netlify/functions/postMessage" hx-trigger="submit" _="on htmx:afterSwap call logData(event)">
+<div onclick="location.href='/'" style="position: relative; max-width: 640px; margin: auto; text-align: center; cursor: pointer;" >
+    <img src="./header.svg" style="width: 640px; max-width: 100%";>
+        <div class="header" style="position: absolute; top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); width: 100%;">
+      <h2 style="font-weight: 400;">A cooperative social network,<br>to realize our worlds.</h2>
+      <h1 style="margin-top: 15px;">groundtalk.land</h1>
+      </div>
+    </div>
+
+    <p class="center"><em>Enter new post</em>
+        <br><br>
+<form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="" hx-trigger="submit" _="on htmx:afterSwap call logData(event)">
     <textarea name="txt" width="400" height="300"></textarea><br><br>
 <button>Submit</button>
 </form>
-
-<div id="feed" hx-get="/.netlify/functions/getMessages" hx-trigger="" _="on htmx:afterSwap call logData(event)">
+<br>
+<div id="feed" class="center">
 
 </div>
 
@@ -171,6 +187,11 @@ function start() {
 </script>
 
 <style>
+    .center {
+        margin: auto;
+        width: fit-content;
+        display: block;
+    }
     div.post {
         background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%; margin-bottom: 0.75em;
     }
@@ -181,4 +202,16 @@ function start() {
         font-style: italic;
         font-size: 12px;
     }
+    @media only screen and (max-width: 600px) {
+
+    .header h2{
+      font-size: 1.3em;
+      line-height: normal;
+    }
+    .header h1{
+      font-size: 1.7em;
+      line-height: normal;
+      margin-top: -11px !important;
+    }
+  }
 </style>

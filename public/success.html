@@ -53,12 +53,25 @@ p {
 button:hover {
   cursor: pointer;
 }
+
+@media only screen and (max-width: 600px) {
+
+.header h2{
+  font-size: 1.3em;
+  line-height: normal;
+}
+.header h1{
+  font-size: 1.7em;
+  line-height: normal;
+  margin-top: -11px !important;
+}
+}
   </style>
 </head>
 <body>
   <main style="max-width: 100%;">
     <div style="position: relative; max-width: 640px; margin: auto;">
-      <img src="./header.svg" style="max-width: 640px;">
+      <img src="./header.svg" style="width: 640px; max-width: 100%;">
           <div class="header" style="position: absolute; top: 50%;
           left: 50%;
           transform: translate(-50%, -50%); width: 100%;">
