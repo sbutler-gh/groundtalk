@@ -21,7 +21,41 @@
           background-color: #ff7b00;
           color: white;
         } */
-        .carousel img.thumbnail {
+        .visually-hidden {
+position: absolute;
+left: -9999px;
+}
+
+body {
+  background: black;
+  color: lightgrey !important;
+  text-decoration: none !important;
+  font-family: arial;
+  padding: 1em;
+}
+
+a {
+    color: lightgrey;
+}
+
+a.title {
+  text-decoration: none;
+  color: lightgrey;
+  font-style: italic;
+  font-size: 16px;
+  font-weight: 600;
+  display: block;
+}
+
+.credit {
+  font-size: 12px;
+}
+
+#featured img.thumbnail {
+max-width: 450px;
+}
+
+.carousel img.thumbnail {
   width: 200px;
   height: 200px;
   object-fit: contain;
@@ -47,6 +81,22 @@
   cursor: pointer;
 }
 
+.m {
+  position: relative;
+}
+
+.title:hover::after {
+    content: '►';
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    font-size: 40px;
+    color: #787878;
+    background: white;
+    border-radius: 13px;
+    transform: translate(-50%, 0);
+}
+
 /* .m:hover::before {
   content: 'hellos';
   position: relative;
@@ -58,12 +108,48 @@
         </style>
 </head>
 <body>
+  <nav style="display: flex; gap: 200px;">
+    <h1>stream</h1>
+  
+    <!-- <a href="/events" style="font-size: 20px; text-decoration: none;">events</a> -->
+    </nav>
+    <!-- <h1>stream</h1> -->
+  
+    <br>
+  
+    <section class="" style="display: flex;">
+  
+    <div id="featured" style="max-width: 450px">
+    </div>
+  
+    <div class="about" style="width: 100%; margin: auto; margin-top: 0; text-align: center;">
+      <h2>Worker and people owned streaming library.</h2>
+      <p>Owned and led by the workers who make it.</p>
+      <p>To tell our stories, and make our worlds.</p>
+      <p><em>Want to get involved or stay up-to-date?</em></p><br>
+      <p style="margin-bottom: 5px;"><em>Email</em></p>
+      <input type="email"><br><br>
+      <!-- <div style="display: flex; margin: auto; width: 300px;"><input type="checkbox"><p style="">Are you an artist or industry worker? ?&#x20DD;</p></div> -->
+      <div style="display: flex; margin: auto; width: 300px;"><input type="checkbox"><p style="">Do you have content (e.g scripts, outlines, audio, video) you'd be interested in distributing through the cooperative? ?&#x20DD;</p></div>
+      <button>Submit</button>
+  
+    </div>
+  
+  </section>
+  
+    <br>
+    <h2>Explore</h2>
+    <br>
     <!-- <h1 style="text-align: center;">User Data</h1> -->
     <div id="carousel" class="carousel">
 
     </div>
 
-    <table style="display: none;" class="output"></table>
+    <!-- The viewer-bg and viewer-iframe are potential features in development, so instead of opening a new tab when you click a resource, it loads an iframe in the page.  If you want to try this out, you can simply uncomment these elements and uncomment the evnet listener functions in the script below in the page. -->
+    <!-- <div id="viewer-bg" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; background: black; opacity: 90%;">
+    </div>
+    <iframe id="viewer-iframe" style="display: none; width: 80vw; height: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; max-width: 100%; height: 400px; z-index: 3;" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
+  
     <script>
       const sheetId = '1oaA7dLz8Scv3mH42Jq_jjfDLvKk4D3umrCArQomqMCE';
 const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
@@ -105,7 +191,7 @@ function init() {
             // processRows(data);
             jsonData.table.rows.forEach((row) => {
 
-              if(row.c[7]?.v == "1") {
+              if(row.c[7]?.v >= 1) {
 
                 console.log(row)
 
@@ -125,18 +211,44 @@ function init() {
                 
                 media.innerHTML = `
                 <a class="title" href=${url} target="_blank"><img class="thumbnail" src=${thumbnail} loading="lazy"><br>${title}</a>
-                <p>by ${creator}</p>`
+                <p>${creator}</p>`
 
-                document.getElementById('carousel').appendChild(media);
+                if (row.c[7]?.v == 1) {
+                  document.getElementById('carousel').appendChild(media)
+                }
+
+                else {
+                  document.getElementById('featured').appendChild(media);
+                }
+
+                // T
+                // This code is for the iframe feature that's in development.  Simply uncomment this addEventListener and the one at the end of the script to reactivate this feature for development purposes.
+
+                //   media.addEventListener('click', function handleClick(event) {
+                //   console.log('open modal', event);
+
+                //   document.getElementById('viewer-bg').style.display = "block";
+                //   document.getElementById('viewer-iframe').style.display = "block";
+
+                //   document.getElementById('viewer-iframe').src = event.target.href;
+                // });
+
 
               }
 
             })
 
-            console.log(document.getElementById('carousel'));
+                console.log(document.getElementById('carousel'));
+                
+                // document.getElementById('viewer-bg').addEventListener('click', function handleClick(event) {
+                // document.getElementById('viewer-bg').style.display = "none";
+                // document.getElementById('viewer-iframe').style.display = "none";
+
+                // });
         })
 }
 
     </script>
+
 </body>
 </html>
