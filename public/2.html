@@ -1,0 +1,142 @@
+<html>
+<head>
+    <style>
+        /* table {
+          font-family: Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        table td, table th {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+        table tr:nth-child(even){background-color: #f2f2f2;}
+        table tr:hover {background-color: #ddd;}
+        
+        table th {
+          padding-top: 12px;
+          padding-bottom: 12px;
+          text-align: left;
+          background-color: #ff7b00;
+          color: white;
+        } */
+        .carousel img.thumbnail {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+}
+
+.carousel iframe {
+  display: none;
+}
+
+.carousel {
+  display: flex;
+  max-width: 100%;
+  overflow-x: scroll;
+}
+
+.carousel > div {
+  display: block;
+  margin-right: 1em;
+}
+
+.title > img:hover {
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+/* .m:hover::before {
+  content: 'hellos';
+  position: relative;
+  top: 100px;
+  left: 50px;
+} */
+
+
+        </style>
+</head>
+<body>
+    <!-- <h1 style="text-align: center;">User Data</h1> -->
+    <div id="carousel" class="carousel">
+
+    </div>
+
+    <table style="display: none;" class="output"></table>
+    <script>
+      const sheetId = '1oaA7dLz8Scv3mH42Jq_jjfDLvKk4D3umrCArQomqMCE';
+const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
+const sheetName = 'Sync';
+const query = encodeURIComponent('Select *')
+const url = `${base}&sheet=${sheetName}&tq=${query}`
+const data = []
+document.addEventListener('DOMContentLoaded', init)
+const output = document.querySelector('.output')
+function init() {
+    fetch(url)
+        .then(res => res.text())
+        .then(rep => {
+            //Remove additional text and extract only JSON:
+            const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
+            console.log(rep)
+            console.log(jsonData);
+            const colz = [];
+            const tr = document.createElement('tr');
+            // //Extract column labels
+            // jsonData.table.cols.forEach((heading) => {
+            //     if (heading.label) {
+            //         let column = heading.label;
+            //         colz.push(column);
+            //         const th = document.createElement('th');
+            //         th.innerText = column;
+            //         tr.appendChild(th);
+            //     }
+            // })
+            // output.appendChild(tr);
+            // //extract row data:
+            // jsonData.table.rows.forEach((rowData) => {
+            //     const row = {};
+            //     colz.forEach((ele, ind) => {
+            //         row[ele] = (rowData.c[ind] != null) ? rowData.c[ind].v : '';
+            //     })
+            //     data.push(row);
+            // })
+            // processRows(data);
+            jsonData.table.rows.forEach((row) => {
+
+              if(row.c[7]?.v == "1") {
+
+                console.log(row)
+
+                let carousel = document.getElementById('carousel');
+
+                let media = document.createElement('div');
+
+                let url = row.c[3]?.v;
+                let title = row.c[1]?.v;
+                let thumbnail = "/thumbnail/" + row.c[8]?.v + ".jpg";
+                let creator = row.c[2]?.v;
+                let format = row.c[5]?.v;
+
+
+                media.classList = `m ${format}`;
+                media.src = url;
+                
+                media.innerHTML = `
+                <a class="title" href=${url} target="_blank"><img class="thumbnail" src=${thumbnail} loading="lazy"><br>${title}</a>
+                <p>by ${creator}</p>`
+
+                document.getElementById('carousel').appendChild(media);
+
+              }
+
+            })
+
+            console.log(document.getElementById('carousel'));
+        })
+}
+
+    </script>
+</body>
+</html>
