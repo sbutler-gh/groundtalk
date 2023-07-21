@@ -18,16 +18,19 @@
 <br>
     <p class="center"><em>Enter new post</em>
         <br><br>
-<form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="" hx-trigger="submit" _="on htmx:afterSwap call logData(event)">
-    <textarea name="txt" width="400" height="300"></textarea><br><br>
-<button>Submit</button>
+<form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
+    <textarea name="txt" style="width: 350px; height: 100px"></textarea>
+    <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
+    <div style="display: flex; margin-top: 10px;">
+        <div class="checkbox"><input type="checkbox" value="Twitter"><label>Post to Twitter</label></div>
+        <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Post to Mastodon</label></div>
+    </div>
+<button style="margin-left: auto; display: block;">Submit</button>
 </form>
-<br>
+<hr style="max-width: 350px; margin: 30px auto;">
 <div id="feed" class="center">
 
 </div>
-
-<!-- <button onclick="start()">start</button> -->
 
 <script>
 
@@ -72,26 +75,89 @@
 
     loadCacheThenGetMessages();
 
-    function logData(event) {
+    function logData(event, swap) {
+            console.log(swap);
             console.log(event);
             const xhr = event.detail.xhr;
+            console.log(xhr);
     }   
+
+//     htmx.logger = function(elt, event, data) {
+//     if(console) {
+//         console.log(event, elt, data);
+//     }
+// }
+
+htmx.on("htmx:afterSwap", function(evt) {
+    console.log(evt);
+    console.log(evt.detail.requestConfig.parameters.txt);
+
+    if (document.querySelector('input[value="Twitter"]').checked || document.querySelector('input[value="Mastodon"]').checked) {
+
+        console.log('crosspost!')
+
+        crosspost(evt.detail.requestConfig.parameters.txt)
+
+    }
+    // myJavascriptLib.init(evt.detail.elt);
+});
 
 
 //  this function below is a work-in-progress, for local automated cross-posting
 
-function start() {
-    
-        var twitter = window.open(`https://twitter.com/intent/tweet?hashtags=quote&text="I begin by taking. I shall find scholars later to demonstrate my perfect right.", Frederick (II) the Great`, 'twitter','width=500,height=500');
+// for extension when browsing other sites: css and html injection when browsing walled gardens like tiwtter and linkedin and facebook to crosspost out and mastodon
 
+
+// for uploading to ground talk:
+// integer pk, natural id which is url that contains post data
+// gah integer pk makes sense (esp for many-to-many like replies), but for offline / local-first / distributed then uuidv7 makes sense
+// automatically compress images on uploading
+// choice of "upload to groundtalk"
+// email notifications on daily basis
+// implement replies
+// show where you are posting from on groundtalk with your author id?
+
+
+
+// authenticate groundtalk
+// authenticate mastodon?
+
+
+function crosspost(msg) {
+    
+    if (document.querySelector('input[value="Twitter"]').checked) {
+        var twitter = window.open(`https://twitter.com/intent/tweet?text=${msg}`, 'twitter','width=500,height=500');
+
+    }
+    
+    if (document.querySelector('input[value="Mastodon"]').checked) {
+        
+        let instance_url = "https://kolektiva.social"
+        var mastodon = window.open(`https://kolektiva.social/share?text=${msg}`, 'mastodon','width=500,height=500');
+
+    }
+        
+        // let instance_url = "https://kolektiva.social"
+
+        // // open twitter window with post contents
+        // var twitter = window.open(`https://twitter.com/intent/tweet?text=${msg}`, 'twitter','width=500,height=500');
+
+        // var mastodon = window.open(`https://kolektiva.social/share?text=${msg}`, 'mastodon','width=500,height=500');
+
+
+        // open Mastodon window with post contents
 
         setTimeout(function() {
 
-           alert('hey');
+        
 
         // twitter.document.querySelector(`[data-testid="tweetButton"] > .css-901oao > .css-901oao > .css-901oao`).click()
 
-        }, 5000)
+        // twitter.querySelector("div[data-testid='tweetButton'] > div > span > span").click();
+
+        twitter.close();
+
+        }, 10000)
 
         twitter.onload = function() {
 
@@ -214,5 +280,9 @@ function start() {
       line-height: normal;
       margin-top: -11px !important;
     }
+  }
+
+  .checkbox > label {
+    margin-left: 5px;
   }
 </style>
