@@ -52,7 +52,8 @@ exports.handler = async (event) => {
               username: form.username,
               email: form.email,
               location: form.location,
-              project: "groundtalk"
+              project: form.project,
+              notes: form?.notes
             }
           }
       })
@@ -65,7 +66,12 @@ exports.handler = async (event) => {
   } else {
     console.log(JSON.stringify(data))
 
-    let copy_text = `We need low and resilient infrastructures.  We need our own social media and networks, if we want them.
+    let copy_text = "";
+    let swap = "";
+
+    if (form.project == "groundtalk") {
+
+    copy_text = `We need low and resilient infrastructures.  We need our own social media and networks, if we want them.
 
     And we need to organize to make it happen.
     
@@ -75,7 +81,7 @@ exports.handler = async (event) => {
     
     https://groundtalk.land`;
 
-    let swap = `
+    swap = `
     <div class="swap" style="max-width: 600px; margin: auto;">
   <h2>Welcome!</h2>
 
@@ -94,7 +100,15 @@ exports.handler = async (event) => {
 <p>📚 Want to help build a library of resources — stories, games, events, education, tools, art, collections, proposals, and more?  <a href="https://docs.google.com/spreadsheets/d/1oaA7dLz8Scv3mH42Jq_jjfDLvKk4D3umrCArQomqMCE/edit?usp=sharing">Go to the library.</a>
 <br>
 <br>
+`}
+
+else if (form.project == "library") {
+  swap = `
+  <h2 style="color: #d5ffd5">Success!</h2>
+  <p>You can start proposing content for the library and adding resources <a href="https://docs.google.com/spreadsheets/d/1oaA7dLz8Scv3mH42Jq_jjfDLvKk4D3umrCArQomqMCE/edit?usp=sharing" style="font-weight: bold; color: #d5ffd5;">on this sheet</a>.
+  <p>If you want to get personally involved, you can write to <strong style="color: #b5deff">library@groundtalk.land</strong></p>
 `
+}
     return {
       statusCode: 200,
       body: (JSON.stringify(data), swap)
