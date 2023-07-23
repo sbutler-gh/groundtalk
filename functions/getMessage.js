@@ -53,7 +53,7 @@ exports.handler = async (event) => {
             </style>
             <div id=${message[0].id} class="post">
             <p class="by">${message[0].by}
-            <p class="ts">${message[0].ts}
+            <p class="ts">${message[0].id}
             <p class="txt">${message[0].txt}
             </div>`
         

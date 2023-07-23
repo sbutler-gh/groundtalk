@@ -19,6 +19,11 @@
 
 
 [[redirects]]
-  from = "/*"
+  from = "api/*"
   to = "/.netlify/functions/getMessage/:splat"
+  status = 200
+
+  [[redirects]]
+  from = "/getSessionWithOtp*"
+  to = "/.netlify/functions/getSessionWithOtp/:splat"
   status = 200

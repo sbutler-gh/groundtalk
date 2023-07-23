@@ -1,3 +1,34 @@
+<script>
+    // add link to groundtalk posts at end of posts?
+    
+    // figure out ids and nesting convention
+
+    // figure out how to display message with specific url
+
+    // authentication / sign -in
+
+    // save mastodon and url preferneces locally in cache
+
+    // social media client, general tool
+
+    // low energy context
+
+    // enter search query, pull from twitter api all searches for the thing, minimal load
+    
+    // image compressor
+
+    // extensions
+
+    // listen for event on twitter post (Find the event), on mastodon post
+
+    // then open the windows, same for groundtalk
+
+    // 1A1A1A -- handle server side
+
+    // groundtalk.land/1 < getMessage "1", netlify function that returns html
+
+    // image upload with squoosh
+</script>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -5,7 +36,8 @@
 <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
 </head>
 
-<div onclick="location.href='/'" style="position: relative; max-width: 640px; margin: auto; text-align: center; cursor: pointer;" >
+<body style="max-width: 100%; width: 800px; margin: auto;">
+<div onclick="location.href='/'" style="display: none; position: relative; max-width: 640px; margin: auto; text-align: center; cursor: pointer;" >
     <img src="./header.svg" style="width: 640px; max-width: 100%";>
         <div class="header" style="position: absolute; top: 50%;
         left: 50%;
@@ -16,30 +48,213 @@
       <a href="/" class="" style="text-align: right; display: block; margin-top: 10px;">Sign up with email</a>
     </div>
 <br>
-    <p class="center"><em>Enter new post</em>
-        <br><br>
-<form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
-    <textarea name="txt" style="width: 350px; height: 100px"></textarea>
-    <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
-    <div style="display: flex; margin-top: 10px;">
-        <div class="checkbox"><input type="checkbox" value="Twitter"><label>Post to Twitter</label></div>
-        <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Post to Mastodon</label></div>
-    </div>
-<button style="margin-left: auto; display: block;">Submit</button>
-</form>
-<hr style="max-width: 350px; margin: 30px auto;">
-<div id="feed" class="center">
 
+<!-- <div style="margin-left: auto; width: fit-content;">
+    <form style="text-align: right;" hx-post="/.netlify/functions/signInWithOtp" hx-trigger="submit">
+     <p><strong>Sign In</strong></p>
+    <label style="margin-top: 10px; display: block;">Email</label>
+    <input type="email" name="email">
+    <br>
+    <a href="" hx-post="/.netlify/functions/forgotPassword" hx-trigger="click">Forgot password?</a>
+    <br>
+    <label style="margin-top: 10px; display: block;">Password</label>
+    <input name="password"><br>
+    <button type="submit" style="display: block; margin: 10px 0 10px auto">Sign In</button>
+    </form>
+</div> -->
+
+<div style="margin: auto">
+            <!-- <label>Posting as ...</label><input name="author">
+            <p class="center"><em>Enter new post</em></p>
+                <br><br> -->
+        <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
+            <textarea name="txt" style="width: 350px; height: 100px"></textarea>
+            <input id="topLevelId" name="id" value="" style="display: none">
+            <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
+            <div style="display: flex; margin-top: 10px;">
+                <div class="checkbox"><input type="checkbox" value="Twitter"><label>Post to Twitter</label></div>
+                <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Post to Mastodon</label></div>
+            </div>
+        <button style="margin-left: auto; display: block;">Submit</button>
+        </form>
+        <hr style="max-width: 350px; margin: 30px auto;">
+        <div id="feed" class="center">
+
+        </div>
 </div>
 
+</body>
 <script>
+
+    function toggleReply(event) {
+
+        // If the button currently says "Reply" and is clicked, we will handle that accordingly.
+        // Otherwise, if the button currently says "Cancel reply", we'll go down to the else statement below and handle accordingly.
+        if (event.srcElement.innerText == "Reply") {
+
+        // We are preparing a comment reply form, which will include pre-populating the "ref" value for the reply.
+        // The "ref" value is a chain going back to a top-level message.
+        // 2023-07-23T09:44:38.787+00:00A is the first reply to a top-level message.
+        // 2023-07-23T09:44:38.787+00:00B is the second reply to a top-level message.
+        // 2023-07-23T09:44:38.787+00:00A0 is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00A
+        // 2023-07-23T09:44:38.787+00:00A1 is the second reply to the message where ref=2023-07-23T09:44:38.787+00:00A
+        // 2023-07-23T09:44:38.787+00:00A0A is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00A0
+
+        // first, we get the ref for the comment we're replying to
+        // if this is a top-level comment, the ref value will be null
+        let parent_ref;
+        if (event.srcElement.parentNode.getAttribute('ref') == "null") {
+            parent_ref = event.srcElement.parentNode.id;
+        }
+        else {
+            parent_ref = event.srcElement.parentNode.getAttribute('ref');
+        }
+
+        // Next, we get the amount of "siblings" — the Nth number of replies to the same message
+        let siblings;
+        siblings = document.querySelectorAll(`[ref^="${parent_ref}"]`).length - 1;
+
+        // if (document.querySelectorAll(`[ref^="${parent_ref}"]`).length == 0) {
+        //     siblings = 0;
+        // }
+
+        // if (document.querySelectorAll(`[ref^="${parent_ref}"]`).length > 1) {
+        //     siblings = document.querySelectorAll(`[ref^="${parent_ref}"]`).length - 1;
+        // }
+        // else if (document.querySelectorAll(`[ref^="${parent_ref}"]`).length == 1) {
+        //     siblings = 1
+        // }
+        // else {
+        //     siblings = 0;
+        // }
+
+        console.log(siblings);
+        console.log(document.querySelectorAll(`[ref^="${parent_ref}"]`));
+
+        console.log(parent_ref);
+
+
+        // We change the reply button text to "Cancel reply", for toggling purposes — so when it's clicked again, it will toggle as expected
+        event.srcElement.innerText = "Cancel reply"
+
+        // We are creating the element for the reply form, text area, and submission button
+        let reply = document.createElement('div');
+
+        // here, we are initiating the "ref" value for the new reply the user is making.  this will be added as an invisible input in the reply form, and submitted as the "ref" value with the message to the database in postMessage.js
+        let ref;
+
+        // to determine what the "ref" value should be for the new reply, we first need to see if the last character of the parent message is a letter or a number.
+        // if it's a letter, the new ref value should end in a number.  if it's a number, th new ref value should end in a letter.
+
+        // this checks if the last character of the parent ref value is a letter, by comparing it's upper and lower case values.
+        // if the upper case and lower case values are DIFFERENT (e.g. 'a' and 'A'), then this if statement evaluates to TRUE, meaning the last character of the parent_ref is a letter — and the last character of the new reply ref should be a number
+        if (parent_ref.slice(-1).toUpperCase() != parent_ref.slice(-1).toLowerCase()) {
+
+           //  since siblings is the Nth reply to the parent_ref, we simply append that N number value to the end of the parent_ref, to get the new ref value for the reply
+           ref = parent_ref + siblings;
+
+        }
+
+        // this means the upper case and lower case values are the same (e.g. '7' and '7'), so the last character of the parent_ref is a number, and the last character of the reply ref should be a letter
+        else {
+
+            // in this clause, we are running a function to turn the siblings Nth reply number into a letter.  0 = a, 25 = z, 26 = aa, 29 = ad, etc. 
+            let ref_letter = '';
+
+            do {
+                const letter = String.fromCharCode(65 + (siblings % 26));
+                ref_letter = letter + ref_letter;
+                siblings = Math.floor(siblings / 26) - 1;
+            } while (siblings >= 0);
+
+            console.log(ref_letter);
+
+            // we append the letter at the end of the ref for the new reply, to the end of the current parent_ref
+            ref = parent_ref + ref_letter;
+
+        }
+
+        console.log(ref);
+
+        // we prepare the reply textarea form element, including the hidden input for ref, which will be submitted in postMessage.js to the backend for the "ref" value
+        reply.innerHTML = `<form hx-post="/.netlify/functions/postMessage" hx-trigger="submit" _="on htmx:afterSwap call logReply(event, swap)">
+            <textarea name="txt"></textarea><br>
+            <input value=${ref} name="ref" style="display: none">
+            <input value="1" name="level" style="display: none">
+            <button type="submit">Submit reply</button>
+            <br>
+            </form>`;
+
+        event.srcElement.parentNode.insertAdjacentElement('afterend', reply);
+
+        // after inserting an element via the DOM, we have to run htmx.process() for htmx to work on the newly inserted element.  documentation from htmx here: https://htmx.org/api/
+        htmx.process(document);
+
+        }
+        else {
+
+            let reply = event.srcElement.parentNode.nextSibling;
+
+            console.log(reply);
+
+            reply.remove();
+
+            event.srcElement.innerText = "Reply"
+        }
+
+
+    }
+
+   async function checkForSignIn() {
+
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_API_KEY;
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const { data, error } = await supabase.auth.getSession()
+
+        if (error) {
+            return {
+            statusCode: 500,
+            body: JSON.stringify(error),
+            };
+        } else {
+            console.log(JSON.stringify(data))
+
+            return {
+                statusCode: 200,
+                body: (JSON.stringify(data))
+            };
+        }
+
+        // const searchParams = new URLSearchParams(window.location.search);
+        // const token = searchParams.get('token');
+
+        // Get the user session and data using the magic link token
+        const getSessionData = async () => {
+            try {
+                const { user, session, error } = await supabase.auth.api.getUserByCookie(magicLinkToken);
+                if (error) {
+                    console.error('Error getting session:', error);
+                } else {
+                    console.log('User:', user);
+                    console.log('Session:', session);
+                }
+            } catch (error) {
+                console.error('Error getting session:', error);
+            }
+        };
+
+        // Call the getSessionData function to retrieve the user session and data
+        getSessionData();
+    }
 
     function loadCacheThenGetMessages() {
 
         // ts = timestamp
         // we will append this as a query parameter to the GET request, to indicate which messages (if any) to retrieve in the backend
         // because some messages may already be cached locally, as a way of lowering the amount of requests and repeated data transfers
-        let ts = 0;
+        let id = 0;
 
         if (localStorage.cache) {
 
@@ -47,13 +262,13 @@
             document.getElementById('feed').innerHTML = localStorage.cache;
 
             // Set the timestamp value equal to the timestamp value of the latest message in the cache.
-            ts = document.getElementsByClassName("ts")[0].innerText;
+            id = document.getElementsByClassName("post")[0].id;
         }
 
             const xhr = new XMLHttpRequest();
 
             // adding timestamp value as query parameter
-            const url = `/.netlify/functions/getMessages/?ts=${ts}`
+            const url = `/.netlify/functions/getMessages/?id=${id}`
 
             xhr.open("GET", url);
 
@@ -61,10 +276,14 @@
                 console.log(xhr.response);
 
                 // appending the messages retrieved from the DB to the top of the feed
-                document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML
+                document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML;
+                // addReply();
 
                 // and updating the message cache with the updated version of the feed
                 localStorage.setItem('cache', document.getElementById('feed').innerHTML);
+
+                // pre-suggesting the id value for new comments
+                updateTopLevelId(document.getElementById('feed').firstChild.id);
             };
             xhr.onerror = function () {
                 // ...handle/report error...
@@ -76,10 +295,12 @@
     loadCacheThenGetMessages();
 
     function logData(event, swap) {
+        console.log('logdata');
             console.log(swap);
             console.log(event);
             const xhr = event.detail.xhr;
             console.log(xhr);
+            updateTopLevelId();
     }   
 
 //     htmx.logger = function(elt, event, data) {
@@ -91,6 +312,13 @@
 htmx.on("htmx:afterSwap", function(evt) {
     console.log(evt);
     console.log(evt.detail.requestConfig.parameters.txt);
+    console.log(evt.detail.requestConfig.parameters.id);
+
+    // if (typeof(evt.detail.requestConfig.parameters.id) == "number") {
+
+    // updateTopLevelId(evt.detail.requestConfig.parameters.id);
+
+    // }
 
     if (document.querySelector('input[value="Twitter"]').checked || document.querySelector('input[value="Mastodon"]').checked) {
 
@@ -101,6 +329,19 @@ htmx.on("htmx:afterSwap", function(evt) {
     }
     // myJavascriptLib.init(evt.detail.elt);
 });
+
+function updateTopLevelId(id) {
+    console.log('updating top id');
+
+
+    // let index = document.getElementById('feed').firstChild.id;
+    // index = Number(index) + 1;
+    // console.log(index);
+
+    document.getElementById('topLevelId').value = Number(id) + 1;
+
+    console.log(document.getElementById('topLevelId').value);
+}
 
 
 //  this function below is a work-in-progress, for local automated cross-posting
@@ -268,6 +509,9 @@ function crosspost(msg) {
     p.ts {
         font-style: italic;
         font-size: 12px;
+    }
+    p.ref {
+        display: none;
     }
     @media only screen and (max-width: 600px) {
 
