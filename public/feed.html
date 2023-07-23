@@ -93,90 +93,76 @@
         if (event.srcElement.innerText == "Reply") {
 
         // We are preparing a comment reply form, which will include pre-populating the "ref" value for the reply.
-        // The "ref" value is a chain going back to a top-level message.
-        // 2023-07-23T09:44:38.787+00:00A is the first reply to a top-level message.
-        // 2023-07-23T09:44:38.787+00:00B is the second reply to a top-level message.
-        // 2023-07-23T09:44:38.787+00:00A0 is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00A
-        // 2023-07-23T09:44:38.787+00:00A1 is the second reply to the message where ref=2023-07-23T09:44:38.787+00:00A
-        // 2023-07-23T09:44:38.787+00:00A0A is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00A0
-
-        // first, we get the ref for the comment we're replying to
-        // if this is a top-level comment, the ref value will be null
-        let parent_ref;
-        if (event.srcElement.parentNode.getAttribute('ref') == "null") {
-            parent_ref = event.srcElement.parentNode.id;
-        }
-        else {
-            parent_ref = event.srcElement.parentNode.getAttribute('ref');
-        }
-
-        // Next, we get the amount of "siblings" — the Nth number of replies to the same message
-        let siblings;
-        siblings = document.querySelectorAll(`[ref^="${parent_ref}"]`).length - 1;
-
-        // if (document.querySelectorAll(`[ref^="${parent_ref}"]`).length == 0) {
-        //     siblings = 0;
-        // }
-
-        // if (document.querySelectorAll(`[ref^="${parent_ref}"]`).length > 1) {
-        //     siblings = document.querySelectorAll(`[ref^="${parent_ref}"]`).length - 1;
-        // }
-        // else if (document.querySelectorAll(`[ref^="${parent_ref}"]`).length == 1) {
-        //     siblings = 1
-        // }
-        // else {
-        //     siblings = 0;
-        // }
-
-        console.log(siblings);
-        console.log(document.querySelectorAll(`[ref^="${parent_ref}"]`));
-
-        console.log(parent_ref);
-
-
-        // We change the reply button text to "Cancel reply", for toggling purposes — so when it's clicked again, it will toggle as expected
-        event.srcElement.innerText = "Cancel reply"
-
-        // We are creating the element for the reply form, text area, and submission button
-        let reply = document.createElement('div');
-
-        // here, we are initiating the "ref" value for the new reply the user is making.  this will be added as an invisible input in the reply form, and submitted as the "ref" value with the message to the database in postMessage.js
         let ref;
+        
+        // The "ref" value is a chain going back to a top-level message.
+        // 2023-07-23T09:44:38.787+00:00-1 is the first reply to a top-level message.
+        // 2023-07-23T09:44:38.787+00:00-2 is the second reply to a top-level message.
+        // 2023-07-23T09:44:38.787+00:00-1-1 is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00-1
+        // 2023-07-23T09:44:38.787+00:00-1-2 is the second reply to the message where ref=2023-07-23T09:44:38.787+00:00-2
+        // 2023-07-23T09:44:38.787+00:00-1-1-1 is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00-1-1
 
-        // to determine what the "ref" value should be for the new reply, we first need to see if the last character of the parent message is a letter or a number.
-        // if it's a letter, the new ref value should end in a number.  if it's a number, th new ref value should end in a letter.
+        // to get the ref value for the new reply, we first need the ref value for the message we're replying to
+        let parent_ref;
+        
+        // we also need to check the number of siblings in the chain — the Nth number of replies to the same message (starting at index of 1)
 
-        // this checks if the last character of the parent ref value is a letter, by comparing it's upper and lower case values.
-        // if the upper case and lower case values are DIFFERENT (e.g. 'a' and 'A'), then this if statement evaluates to TRUE, meaning the last character of the parent_ref is a letter — and the last character of the new reply ref should be a number
-        if (parent_ref.slice(-1).toUpperCase() != parent_ref.slice(-1).toLowerCase()) {
+        let siblings;
 
-           //  since siblings is the Nth reply to the parent_ref, we simply append that N number value to the end of the parent_ref, to get the new ref value for the reply
-           ref = parent_ref + siblings;
+        // if we're replying to a top-level comment, the parent_ref value will be null
+        // we also need to handle this case a little carefully with the siblings value
+        if (event.srcElement.parentNode.getAttribute('ref') == "null") {
+            console.log('top level message')
 
+            // since there is no ref value for this message, we will use it's id instead
+            parent_ref = event.srcElement.parentNode.id;
+
+             // to determine the amount of siblings in this chain, we only want to count all the siblings on the first level — e.g. only those with a single hyphen
+             let nodeList = document.querySelectorAll(`[ref^="${parent_ref}"]`);
+
+            //  however, this will return a list of ALL the messages with reference values that begin with the parent_ref — including those on the second, third, fourth levels.
+            // So we want to use a regex to find only the siblings on the first level — by filtering the nodeList above for values that end in a :00-[number]
+            const regex = new RegExp(/:00-\d+$/g);
+
+            console.log(nodeList);
+
+            console.log(Array.from(nodeList));
+            
+            // console.log(Array.from(nodeList).filter(node => regex.test(node)))
+
+            let sibs = Array.from(nodeList).filter(node => regex.test(node.attributes['ref'].nodeValue) == true);
+
+            for (i = 0; i < nodeList.length; i++) {
+                console.log(nodeList[i].attributes['ref'].nodeValue);
+                console.log(regex.test(nodeList[i].attributes['ref'].nodeValue) == true)
+            }
+
+            console.log(sibs);
+
+            // console.log(siblingNodeList)
+
+
+            // console.log(array.from(document.querySelectorAll(`[ref^="${parent_ref}"][ref$=":00-"]`)).filter(node => node.length ))
+            siblings = sibs.length + 1;
         }
-
-        // this means the upper case and lower case values are the same (e.g. '7' and '7'), so the last character of the parent_ref is a number, and the last character of the reply ref should be a letter
         else {
-
-            // in this clause, we are running a function to turn the siblings Nth reply number into a letter.  0 = a, 25 = z, 26 = aa, 29 = ad, etc. 
-            let ref_letter = '';
-
-            do {
-                const letter = String.fromCharCode(65 + (siblings % 26));
-                ref_letter = letter + ref_letter;
-                siblings = Math.floor(siblings / 26) - 1;
-            } while (siblings >= 0);
-
-            console.log(ref_letter);
-
-            // we append the letter at the end of the ref for the new reply, to the end of the current parent_ref
-            ref = parent_ref + ref_letter;
-
+            console.log('not top level message');
+            parent_ref = event.srcElement.parentNode.getAttribute('ref');
+            console.log(parent_ref);
+            console.log(document.querySelectorAll(`[ref^="${parent_ref}"]`));
+            siblings = document.querySelectorAll(`[ref^="${parent_ref}"]`).length;
+            console.log(siblings);
         }
 
+        // Finally, we set the ref value for the new message reply based on the siblings found in the chain above
+
+        ref = parent_ref + "-" + siblings
         console.log(ref);
 
-        // we prepare the reply textarea form element, including the hidden input for ref, which will be submitted in postMessage.js to the backend for the "ref" value
+
+        // Now we create an element which will be inserted into the DOM and contains the form and textarea for the new message, including a hidden input value with the "ref" for the message reply — that we determined above
+        let reply = document.createElement('div');
+
         reply.innerHTML = `<form hx-post="/.netlify/functions/postMessage" hx-trigger="submit" _="on htmx:afterSwap call logReply(event, swap)">
             <textarea name="txt"></textarea><br>
             <input value=${ref} name="ref" style="display: none">
@@ -189,6 +175,9 @@
 
         // after inserting an element via the DOM, we have to run htmx.process() for htmx to work on the newly inserted element.  documentation from htmx here: https://htmx.org/api/
         htmx.process(document);
+
+        // We change the reply button text to "Cancel reply", for toggling purposes — so when it's clicked again, it will toggle as expected
+        event.srcElement.innerText = "Cancel reply"
 
         }
         else {
@@ -256,10 +245,10 @@
         // because some messages may already be cached locally, as a way of lowering the amount of requests and repeated data transfers
         let id = 0;
 
-        if (localStorage.cache) {
+        if (localStorage?.cache) {
 
             // setting the feed to all of the messages in the cache
-            document.getElementById('feed').innerHTML = localStorage.cache;
+            document.getElementById('feed').innerHTML = localStorage?.cache;
 
             // Set the timestamp value equal to the timestamp value of the latest message in the cache.
             id = document.getElementsByClassName("post")[0].id;
@@ -275,6 +264,8 @@
             xhr.onload = function () {
                 console.log(xhr.response);
 
+                if (xhr.response) {
+
                 // appending the messages retrieved from the DB to the top of the feed
                 document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML;
                 // addReply();
@@ -282,8 +273,7 @@
                 // and updating the message cache with the updated version of the feed
                 localStorage.setItem('cache', document.getElementById('feed').innerHTML);
 
-                // pre-suggesting the id value for new comments
-                updateTopLevelId(document.getElementById('feed').firstChild.id);
+                }
             };
             xhr.onerror = function () {
                 // ...handle/report error...
@@ -310,6 +300,7 @@
 // }
 
 htmx.on("htmx:afterSwap", function(evt) {
+    console.log('after swap')
     console.log(evt);
     console.log(evt.detail.requestConfig.parameters.txt);
     console.log(evt.detail.requestConfig.parameters.id);
@@ -329,20 +320,6 @@ htmx.on("htmx:afterSwap", function(evt) {
     }
     // myJavascriptLib.init(evt.detail.elt);
 });
-
-function updateTopLevelId(id) {
-    console.log('updating top id');
-
-
-    // let index = document.getElementById('feed').firstChild.id;
-    // index = Number(index) + 1;
-    // console.log(index);
-
-    document.getElementById('topLevelId').value = Number(id) + 1;
-
-    console.log(document.getElementById('topLevelId').value);
-}
-
 
 //  this function below is a work-in-progress, for local automated cross-posting
 
