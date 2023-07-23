@@ -122,7 +122,7 @@
 
             //  however, this will return a list of ALL the messages with reference values that begin with the parent_ref — including those on the second, third, fourth levels.
             // So we want to use a regex to find only the siblings on the first level — by filtering the nodeList above for values that end in a :00-[number]
-            const regex = new RegExp(/:00-\d+$/g);
+            const regex = new RegExp(/:00-\d+$/i);
 
             console.log(nodeList);
 
@@ -134,7 +134,7 @@
 
             for (i = 0; i < nodeList.length; i++) {
                 console.log(nodeList[i].attributes['ref'].nodeValue);
-                console.log(regex.test(nodeList[i].attributes['ref'].nodeValue) == true)
+                console.log(regex.test(nodeList[i].attributes['ref'].nodeValue))
             }
 
             console.log(sibs);
