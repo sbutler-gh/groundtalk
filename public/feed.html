@@ -63,6 +63,8 @@
     </form>
 </div> -->
 
+<button onclick='showParent("2023-07-23T14:20:55.731+00:00")'>test</button>
+
 <div style="margin: auto">
             <!-- <label>Posting as ...</label><input name="author">
             <p class="center"><em>Enter new post</em></p>
@@ -272,7 +274,6 @@
 
                 // and updating the message cache with the updated version of the feed
                 localStorage.setItem('cache', document.getElementById('feed').innerHTML);
-
                 }
             };
             xhr.onerror = function () {
@@ -280,7 +281,125 @@
             };
 
             xhr.send();
+
+            let refs = document.querySelectorAll(`div[ref]:not([ref="null"])`);
+
+            console.log();
+
+    //         for (i = 0; i < refs.length; i++) {
+
+    //             // drop after last hyphen, substring
+    //             // queryselect ref
+    //             // take text value
+    //             // include
+
+    //             let parent = document.createElement('button');
+    //             parent.innerText = 'Show parent'
+    //             parent.onclick =     function showParent(event) {
+    //     console.log(event)
+    //     console.log(event.srcElement.nextSibling.attributes['ref'].nodeValue);
+    // }
+
+    //             let children = document.createElement('button');
+    //             children.innerText = 'Show children'
+    //             children.onclick =     function showChildren(event) {
+    //     console.log(event)
+    //     console.log(event.srcElement.previousSibling.attributes['ref'].nodeValue);
+    // }
+
+    //             children.style.marginBottom = "10px";
+    //             children.style.display = "block";
+
+    //             refs[i].insertAdjacentElement('beforebegin', parent);
+    //             refs[i].insertAdjacentElement('afterend', children);
+    //         }
+
     }
+
+    function showParent(event,parentRef) {
+
+    if (event.srcElement.innerText == "Show parent") {
+        console.log(parentRef)
+        console.log(event);
+        let list = document.createElement('ul');
+        let p = document.createElement('p');
+
+        // find all nodes with ref value that starts with thisref
+
+        let parent = document.querySelector(`[ref="${[parentRef]}"], [id="${[parentRef]}"]`);
+        console.log(parent);
+
+        p.innerHTML = `<a href="#${parent.id}">${parent.children['2'].innerText}</a>`
+
+        event.srcElement.insertAdjacentElement('afterend', p);
+        event.srcElement.innerText = "Minimize";
+
+        // useful if we want to get a tree of parents
+        // nodeList.forEach(div => {
+        //     console.log(div);
+        //     console.log(div.children['2']);
+        //     var li = document.createElement('li');
+        //     li.innerText = div.children['2'].innerText;
+        //     list.appendChild(li);
+        // })
+
+    }
+    else {
+        console.log('minimize')
+        event.srcElement.innerText = "Show parent";
+        event.srcElement.nextSibling.remove();
+    }
+
+}
+
+    function showChildren(event,thisRef) {
+
+        if (event.srcElement.innerText == "Show children") {
+            console.log(thisRef)
+            console.log(event);
+            let list = document.createElement('ul');
+
+            // find all nodes with ref value that starts with thisref
+
+            let nodeList = document.querySelectorAll(`[ref^="${thisRef}-"]`);
+            console.log(nodeList);
+
+            let sortedList = [...nodeList].sort((a, b) => (a.attributes['ref'].nodeValue.substring(30) > b.attributes['ref'].nodeValue.substring(30)) ? 1 : -1);
+
+            console.log(sortedList);
+
+
+            sortedList.forEach(div => {
+                console.log(div);
+                console.log(div.children['2']);
+                var li = document.createElement('li');
+                li.innerHTML = `<a href="#${div.id}">${div.children['2'].innerText}</a>`
+
+                // here we are counting the number of hyphens in the ref value, to get the level of "nesting" of the message.
+                // first-level reply to a parent message will have a level of 1, a reply to a first-level reply will have a level of 2
+                let level = div.getAttribute('ref').split("-").length - 3;
+                console.log(level);
+
+                // now we calculate the indent for nested replies, which we will include as marginLeft in the styling
+                let indent = (level - 1) * 20;
+
+                li.style.marginLeft = indent + "px";
+                list.appendChild(li);
+            })
+
+            console.log(list);
+
+            event.srcElement.insertAdjacentElement('afterend', list);
+            event.srcElement.innerText = "Minimize";
+        }
+        else {
+            console.log('minimize')
+            event.srcElement.innerText = "Show children";
+            event.srcElement.nextSibling.remove();
+        }
+
+    }
+
 
     loadCacheThenGetMessages();
 
@@ -292,6 +411,28 @@
             console.log(xhr);
             updateTopLevelId();
     }   
+
+    function sortList(ul){
+    var new_ul = ul.cloneNode(false);
+
+    // Add all lis to an array
+    var lis = [];
+    for(var i = ul.childNodes.length; i--;){
+        if(ul.childNodes[i].nodeName === 'LI')
+            lis.push(ul.childNodes[i]);
+    }
+
+    // Sort the lis in descending order
+    lis.sort(function(a, b){
+       return parseInt(b.childNodes[0].data , 10) - 
+              parseInt(a.childNodes[0].data , 10);
+    });
+
+    // Add them into the ul in order
+    for(var i = 0; i < lis.length; i++)
+        new_ul.appendChild(lis[i]);
+    ul.parentNode.replaceChild(new_ul, ul);
+}
 
 //     htmx.logger = function(elt, event, data) {
 //     if(console) {
@@ -501,6 +642,10 @@ function crosspost(msg) {
       line-height: normal;
       margin-top: -11px !important;
     }
+  }
+  button {
+    display: block;
+    margin-bottom: 10px;
   }
 
   .checkbox > label {
