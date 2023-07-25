@@ -24,6 +24,6 @@
   status = 200
 
   [[redirects]]
-  from = "/getSessionWithOtp*"
+  from = "/getSessionWithOtp/*"
   to = "/.netlify/functions/getSessionWithOtp/:splat"
-  status = 200
+  status = 301

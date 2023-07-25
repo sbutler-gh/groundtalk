@@ -36,8 +36,8 @@
 <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
 </head>
 
-<body style="max-width: 100%; width: 800px; margin: auto;">
-<div onclick="location.href='/'" style="display: none; position: relative; max-width: 640px; margin: auto; text-align: center; cursor: pointer;" >
+<body onload="loadUserDetails()" style="max-width: 100%; width: 800px; margin: auto;">
+<!-- <div onclick="location.href='/'" style="display: none; position: relative; max-width: 640px; margin: auto; text-align: center; cursor: pointer;" >
     <img src="./header.svg" style="width: 640px; max-width: 100%";>
         <div class="header" style="position: absolute; top: 50%;
         left: 50%;
@@ -45,25 +45,23 @@
       <h2 style="font-weight: 400;">A cooperative social network,<br>to realize our worlds.</h2>
       <h1 style="margin-top: 15px;">groundtalk.land</h1>
       </div>
-      <a href="/" class="" style="text-align: right; display: block; margin-top: 10px;">Sign up with email</a>
     </div>
-<br>
+<br> -->
 
-<!-- <div style="margin-left: auto; width: fit-content;">
-    <form style="text-align: right;" hx-post="/.netlify/functions/signInWithOtp" hx-trigger="submit">
-     <p><strong>Sign In</strong></p>
-    <label style="margin-top: 10px; display: block;">Email</label>
-    <input type="email" name="email">
+<div style="margin-left: auto; width: fit-content;">
+    <form style="text-align: right;" id="signInForm" hx-post="/.netlify/functions/signInWithOtp" hx-target="#signInUpdate" hx-trigger="submit">
+     <p style="margin-bottom: 0px;"><strong>Sign in with magic link</strong></p>
+    <label style="margin-top: 5px; display: block;">Email</label>
+    <input type="email" name="email" required>
     <br>
-    <a href="" hx-post="/.netlify/functions/forgotPassword" hx-trigger="click">Forgot password?</a>
+    <!-- <a href="" hx-post="/.netlify/functions/forgotPassword" hx-trigger="click">Forgot password?</a>
     <br>
     <label style="margin-top: 10px; display: block;">Password</label>
-    <input name="password"><br>
-    <button type="submit" style="display: block; margin: 10px 0 10px auto">Sign In</button>
+    <input name="password"><br> -->
+    <button type="submit" style="display: block; margin: 10px 0 10px auto">Send Magic Link</button>
+    <span id="signInUpdate"></span>
     </form>
-</div> -->
-
-<button onclick='showParent("2023-07-23T14:20:55.731+00:00")'>test</button>
+</div>
 
 <div style="margin: auto">
             <!-- <label>Posting as ...</label><input name="author">
@@ -87,6 +85,60 @@
 
 </body>
 <script>
+
+    function loadUserDetails() {
+        if (localStorage.getItem('email') && localStorage.getItem('email') != "undefined") {
+            document.getElementById('signInForm').innerHTML = `<p class="user">${localStorage.getItem('email')}</p>`
+        }
+
+        else {
+            auth()
+        }
+    }
+
+    function auth() {
+        if (window.location.href.includes('magiclink')) {
+
+        console.log(window.location);
+        let params_url = window.location.href.replace('#', '?')
+        console.log(params_url);
+        let params = new URLSearchParams(params_url);
+        console.log([...params])
+        console.log([...params][0][1]);
+
+        // console.log([...params.[2].[1]])
+
+        const xhr = new XMLHttpRequest();
+
+        // adding timestamp value as query parameter
+        const url = `/.netlify/functions/signInWithRefreshToken/?refresh_token=${params.get('refresh_token')}`
+
+        xhr.open("GET", url);
+
+        xhr.onload = function () {
+
+            if (xhr.status == 200) {
+
+                let response = JSON.parse(xhr.response);
+
+                localStorage.setItem('id', response.id);
+                localStorage.setItem('email', response.email);
+                localStorage.setItem('username', response.username)
+                localStorage.setItem('access_token', response.access_token);
+
+                document.getElementById('signInForm').innerHTML = `<p class="user">${localStorage.getItem('email')}</p>`
+
+            }
+        };
+        xhr.onerror = function () {
+            // ...handle/report error...
+        };
+
+        xhr.send();
+
+        }
+
+    }
 
     function toggleReply(event) {
 
@@ -650,5 +702,9 @@ function crosspost(msg) {
 
   .checkbox > label {
     margin-left: 5px;
+  }
+
+  .user {
+    font-weight: bold;
   }
 </style>
