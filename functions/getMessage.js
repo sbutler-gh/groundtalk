@@ -33,6 +33,11 @@ exports.handler = async (event) => {
             };
           } else {
             console.log(message);
+            
+            // for security reasons, we will not show the full email on the client side.
+            // in future, we could perhaps explore a trust approach where if you have a user's keys, you can see their full email
+            let username = message[0].by.match(/^([^@]*)@/)[1];
+
 
             // return {
             //     statusCode: 200,
@@ -52,7 +57,7 @@ exports.handler = async (event) => {
             }
             </style>
             <div id=${message[0].id} class="post">
-            <p class="by">${message[0].by}
+            <p class="by" user="${message[0].by_id}">${username}
             <p class="ts">${message[0].id}
             <p class="txt">${message[0].txt}
             </div>`

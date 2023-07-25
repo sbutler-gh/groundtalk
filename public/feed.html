@@ -69,8 +69,8 @@
                 <br><br> -->
         <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
             <textarea name="txt" style="width: 350px; height: 100px"></textarea>
-            <input id="topLevelId" name="id" value="" style="display: none">
             <input name="by" class="by" id="by_main" style="display: none;">
+            <input name="by_id" class="by_id" id="by_id_main" style="display: none;">
             <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
             <div style="display: flex; margin-top: 10px;">
                 <div class="checkbox"><input type="checkbox" value="Twitter"><label>Post to Twitter</label></div>
@@ -90,7 +90,8 @@
     function loadUserDetails() {
         if (localStorage.getItem('email') && localStorage.getItem('email') != "undefined") {
             document.getElementById('signInForm').innerHTML = `<p class="user">${localStorage.getItem('email')}</p>`
-            document.getElementById('by_main').setAttribute('value', localStorage.getItem('username'));
+            document.getElementById('by_main').setAttribute('value', localStorage.getItem('email'));
+            document.getElementById('by_id_main').setAttribute('value', localStorage.getItem('id'));
         }
 
         else {
@@ -143,6 +144,8 @@
     }
 
     function toggleReply(event) {
+
+        console.log(event);
 
         // If the button currently says "Reply" and is clicked, we will handle that accordingly.
         // Otherwise, if the button currently says "Cancel reply", we'll go down to the else statement below and handle accordingly.
@@ -219,11 +222,12 @@
         // Now we create an element which will be inserted into the DOM and contains the form and textarea for the new message, including a hidden input value with the "ref" for the message reply — that we determined above
         let reply = document.createElement('div');
 
-        reply.innerHTML = `<form hx-post="/.netlify/functions/postMessage" hx-trigger="submit" _="on htmx:afterSwap call logReply(event, swap)">
+        reply.innerHTML = `<form class="replyForm" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logReply(event, swap)">
             <textarea name="txt"></textarea><br>
             <input value=${ref} name="ref" style="display: none">
-            <input id="by_reply" class="by" name="by" value="${localStorage?.getItem('username')}" style="display: none">
-            <button type="submit">Submit reply</button>
+            <input id="by_reply" class="by" name="by" value="${localStorage?.getItem('email')}" style="display: none">
+            <input id="by_id_reply" name="by_id" class="by" value="${localStorage?.getItem('id')}" style="display: none;">
+            <button class="replyToggle" type="submit" onclick="toggleReply(event)">Submit reply</button>
             <br>
             </form>`;
 
@@ -238,6 +242,23 @@
         }
         else {
 
+            // If this returns true, this event triggered on submission of a reply form
+            if (event.target.outerText == "Submit reply") {
+
+                // So we'll first find the form
+                let form = event.target.parentElement;
+
+                // And set it's display to none
+                form.style.display = "none";
+
+                // And we'll toggle the Reply button text from "Cancel Reply" back to "Reply"
+
+                // First, we need to get the
+                let replyButton = form.parentElement.previousSibling.lastElementChild;
+
+                replyButton.innerText = "Reply"
+             }
+
             let reply = event.srcElement.parentNode.nextSibling;
 
             console.log(reply);
@@ -248,50 +269,6 @@
         }
 
 
-    }
-
-   async function checkForSignIn() {
-
-        const supabaseUrl = process.env.SUPABASE_URL;
-        const supabaseKey = process.env.SUPABASE_API_KEY;
-        const supabase = createClient(supabaseUrl, supabaseKey);
-
-        const { data, error } = await supabase.auth.getSession()
-
-        if (error) {
-            return {
-            statusCode: 500,
-            body: JSON.stringify(error),
-            };
-        } else {
-            console.log(JSON.stringify(data))
-
-            return {
-                statusCode: 200,
-                body: (JSON.stringify(data))
-            };
-        }
-
-        // const searchParams = new URLSearchParams(window.location.search);
-        // const token = searchParams.get('token');
-
-        // Get the user session and data using the magic link token
-        const getSessionData = async () => {
-            try {
-                const { user, session, error } = await supabase.auth.api.getUserByCookie(magicLinkToken);
-                if (error) {
-                    console.error('Error getting session:', error);
-                } else {
-                    console.log('User:', user);
-                    console.log('Session:', session);
-                }
-            } catch (error) {
-                console.error('Error getting session:', error);
-            }
-        };
-
-        // Call the getSessionData function to retrieve the user session and data
-        getSessionData();
     }
 
     function loadCacheThenGetMessages() {
@@ -320,7 +297,7 @@
             xhr.onload = function () {
                 console.log(xhr.response);
 
-                if (xhr.response) {
+                if (xhr.status == 200) {
 
                 // appending the messages retrieved from the DB to the top of the feed
                 document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML;
@@ -332,42 +309,11 @@
             };
             xhr.onerror = function () {
                 // ...handle/report error...
+                console.log('error in loadCacheThenGetMessages');
+                console.log(xhr)
             };
 
             xhr.send();
-
-            let refs = document.querySelectorAll(`div[ref]:not([ref="null"])`);
-
-            console.log();
-
-    //         for (i = 0; i < refs.length; i++) {
-
-    //             // drop after last hyphen, substring
-    //             // queryselect ref
-    //             // take text value
-    //             // include
-
-    //             let parent = document.createElement('button');
-    //             parent.innerText = 'Show parent'
-    //             parent.onclick =     function showParent(event) {
-    //     console.log(event)
-    //     console.log(event.srcElement.nextSibling.attributes['ref'].nodeValue);
-    // }
-
-    //             let children = document.createElement('button');
-    //             children.innerText = 'Show children'
-    //             children.onclick =     function showChildren(event) {
-    //     console.log(event)
-    //     console.log(event.srcElement.previousSibling.attributes['ref'].nodeValue);
-    // }
-
-    //             children.style.marginBottom = "10px";
-    //             children.style.display = "block";
-
-    //             refs[i].insertAdjacentElement('beforebegin', parent);
-    //             refs[i].insertAdjacentElement('afterend', children);
-    //         }
-
     }
 
     function showParent(event,parentRef) {
@@ -463,7 +409,6 @@
             console.log(event);
             const xhr = event.detail.xhr;
             console.log(xhr);
-            updateTopLevelId();
     }   
 
     function sortList(ul){
@@ -488,11 +433,6 @@
     ul.parentNode.replaceChild(new_ul, ul);
 }
 
-//     htmx.logger = function(elt, event, data) {
-//     if(console) {
-//         console.log(event, elt, data);
-//     }
-// }
 
 htmx.on("htmx:afterSwap", function(evt) {
     console.log('after swap')
@@ -500,11 +440,19 @@ htmx.on("htmx:afterSwap", function(evt) {
     console.log(evt.detail.requestConfig.parameters.txt);
     console.log(evt.detail.requestConfig.parameters.id);
 
-    // if (typeof(evt.detail.requestConfig.parameters.id) == "number") {
+    // If the swap was a new message
+    if (evt.detail.pathInfo.requestPath == "/.netlify/functions/postMessage") {
+        // we update the message cache with the updated version of the feed
+        localStorage.setItem('cache', document.getElementById('feed').innerHTML);
 
-    // updateTopLevelId(evt.detail.requestConfig.parameters.id);
+        // And if it was a reply, we remove the reply form
+        if (evt.detail.requestConfig.triggeringEvent.srcElement.className == "replyForm") {
+            evt.detail.requestConfig.triggeringEvent.srcElement.remove();
+        }
 
-    // }
+        
+    }
+
 
     if (document.querySelector('input[value="Twitter"]').checked || document.querySelector('input[value="Mastodon"]').checked) {
 
@@ -513,7 +461,6 @@ htmx.on("htmx:afterSwap", function(evt) {
         crosspost(evt.detail.requestConfig.parameters.txt)
 
     }
-    // myJavascriptLib.init(evt.detail.elt);
 });
 
 //  this function below is a work-in-progress, for local automated cross-posting
@@ -549,121 +496,7 @@ function crosspost(msg) {
         var mastodon = window.open(`https://kolektiva.social/share?text=${msg}`, 'mastodon','width=500,height=500');
 
     }
-        
-        // let instance_url = "https://kolektiva.social"
-
-        // // open twitter window with post contents
-        // var twitter = window.open(`https://twitter.com/intent/tweet?text=${msg}`, 'twitter','width=500,height=500');
-
-        // var mastodon = window.open(`https://kolektiva.social/share?text=${msg}`, 'mastodon','width=500,height=500');
-
-
-        // open Mastodon window with post contents
-
-        setTimeout(function() {
-
-        
-
-        // twitter.document.querySelector(`[data-testid="tweetButton"] > .css-901oao > .css-901oao > .css-901oao`).click()
-
-        // twitter.querySelector("div[data-testid='tweetButton'] > div > span > span").click();
-
-        twitter.close();
-
-        }, 10000)
-
-        twitter.onload = function() {
-
-        // var tweetInput = twitterWindow.document.querySelector('[name="tweet"]');
-        // tweetInput.value = text;
-
-        // alert('load')
-
-        // Find the Tweet button and click it
-        // var tweetButton = twitterWindow.document.querySelector('[data-testid="tweetButton"]');
-        // tweetButton.click();
-        }
-
-
-//         function composeTweet(text) {
-//   // Open a new window
-//   var twitterWindow = window.open("https://twitter.com/compose/tweet", "_blank");
-
-//   // Wait for the window to load
-//   twitterWindow.onload = function() {
-//     // Find the text input field and set its value
-//     var tweetInput = twitterWindow.document.querySelector('[name="tweet"]');
-//     tweetInput.value = text;
-
-//     // Find the Tweet button and click it
-//     var tweetButton = twitterWindow.document.querySelector('[data-testid="tweetButtonInline"]');
-//     tweetButton.click();
-//   };
-// }
-
-// Usage example
-// composeTweet("Hello, world!");
-
-
-
-
-        // alert("page fully loaded");
-
-        // let tweetButton = null;
-
-        // twitter.document.querySelectorAll(`data-testid[tweetButton]`)[0].onload() = (event) => {
-        //     alert('hey');
-        // }
-
-        // while (tweetButton == null) {
-        //     if (twitter.document.querySelectorAll(`data-testid[tweetButton]`)[0]) {
-        //         twitter.console.log('not null');
-        //         tweetButton = twitter.document.querySelectorAll(`data-testid[tweetButton]`)[0];
-        //         twitter.alert('not null');
-        //     }
-        // }
-
-        // twitter.onload = (event) => {
-        //     console.log("page fully loaded");
-        // };
-
-        // twitter.addEventListener("load", (event) => {
-
-        //     alert("page fully loaded");
-
-        // })
-    
-
-            // twitter.document.querySelectorAll(`data-testid="tweetButton"`)[0].click
-        // twitter.document.onload()
-
-        // getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].innerHTML = `<span data-offset-key="fjigd-0-0"><span data-text="true">test</span></span>`
-
-    }
-
-// function text() {
-
-
-//     // openTab().then({
-//     //     function(){
-//     //         twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].firstChild.click();
-//     //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].firstChild.focus();
-
-
-//     //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].innerHTML = `<span data-offset-key="fjigd-0-0"><span data-text="true">test</span></span>`
-//     //     }
-//     // })
-
-// };
-
-    // function replaceHTML() {
-    //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].firstChild.click();
-    //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].firstChild.focus();
-
-
-    //     twitter.document.getElementsByClassName("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")[0].innerHTML = `<span data-offset-key="fjigd-0-0"><span data-text="true">test</span></span>`
-
-    // }
+ }
 </script>
 
 <style>

@@ -28,12 +28,13 @@ exports.handler = async (event) => {
 
     console.log(id);
 
-    const { data, error } = await supabase
+    const { data: message, error } = await supabase
     .from("messages")
-    .insert({id: id, txt: form.txt, ref: form?.ref})
+    .insert({id: id, txt: form.txt, ref: form?.ref, by: form?.by, by_id: form?.by_id})
     .select()
   
   if (error) {
+    console.log(error)
     return {
       statusCode: 500,
       body: JSON.stringify(error),
@@ -41,16 +42,43 @@ exports.handler = async (event) => {
   } else {
     // let swap = `<p style="color: green"><em>Success!</em>
 
-    let swap = `<div id=${data[0].id} ref=${data[0].ref} class="post">
-    <p class="by">${data[0].by}
-    <p class="ts">${data[0].id}
-    <p class="txt">${form.txt}</p><br>
-    <button onclick=toggleReply(event);>Reply</button>
-    </div>`;
+    let username = message[0].by.match(/^([^@]*)@/)[1];
+
+    let swap;
+    let reply;
+
+    if (message[0].ref == "null") {
+
+      swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">
+          <p class="by" user="${message[0].by_id}">${username}
+          <p class="ts">${message[0].id}
+          <p class="txt">${message[0].txt}</p><br>
+          <button onclick=toggleReply(event);>Reply</button>
+      </div>
+      <button onclick='showChildren(event,'${message[0].id}')'>Show children</button>
+      `
+    }
+    else {
+
+      reply = 1;
+
+      var stringVariable = message[0].ref;
+      let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
+      
+      swap = `<button onclick=showParent(event,'${parent}')>Show parent</button>
+        <div id=${message[0].id} ref=${message[0].ref} class="post">
+          <p class="by" user="${message[0].by_id}">${username}
+          <p class="ts">${message[0].id}
+          <p class="txt">${message[0].txt}</p><br>
+          <button onclick=toggleReply(event);>Reply</button>
+      </div>
+      <button onclick=showChildren(event,'${message[0].ref}')>Show children</button>
+      `
+    }
 
     return {
       statusCode: 200,
-      body: (JSON.stringify(data), swap)
+      body: (JSON.stringify(message), reply, swap)
     };
   }
   };
