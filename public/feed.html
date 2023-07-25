@@ -70,6 +70,7 @@
         <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
             <textarea name="txt" style="width: 350px; height: 100px"></textarea>
             <input id="topLevelId" name="id" value="" style="display: none">
+            <input name="by" class="by" id="by_main" style="display: none;">
             <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
             <div style="display: flex; margin-top: 10px;">
                 <div class="checkbox"><input type="checkbox" value="Twitter"><label>Post to Twitter</label></div>
@@ -89,6 +90,7 @@
     function loadUserDetails() {
         if (localStorage.getItem('email') && localStorage.getItem('email') != "undefined") {
             document.getElementById('signInForm').innerHTML = `<p class="user">${localStorage.getItem('email')}</p>`
+            document.getElementById('by_main').setAttribute('value', localStorage.getItem('username'));
         }
 
         else {
@@ -220,7 +222,7 @@
         reply.innerHTML = `<form hx-post="/.netlify/functions/postMessage" hx-trigger="submit" _="on htmx:afterSwap call logReply(event, swap)">
             <textarea name="txt"></textarea><br>
             <input value=${ref} name="ref" style="display: none">
-            <input value="1" name="level" style="display: none">
+            <input id="by_reply" class="by" name="by" value="${localStorage?.getItem('username')}" style="display: none">
             <button type="submit">Submit reply</button>
             <br>
             </form>`;

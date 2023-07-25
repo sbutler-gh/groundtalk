@@ -6,11 +6,7 @@ const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_API_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    flowType: 'pkce',
-  },
-})
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -21,11 +17,18 @@ exports.handler = async (event) => {
 
     const form = querystring.parse(event.body);
     console.log(form.email);
+    form.username = form.email.substring(0, form.email.indexOf("@"));
+    console.log(form.username);
+
 
     const { user, session, error } = await supabase.auth.signInWithOtp({
         email: form.email,
         options: {
             emailRedirectTo: 'http://localhost:8888/feed.html',
+            data: {
+              username: form.username,
+              email: form.email,
+            }
           },
       })
 
