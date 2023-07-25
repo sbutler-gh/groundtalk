@@ -220,18 +220,22 @@
 
 
         // Now we create an element which will be inserted into the DOM and contains the form and textarea for the new message, including a hidden input value with the "ref" for the message reply — that we determined above
-        let reply = document.createElement('div');
+        let reply = document.createElement('form');
 
-        reply.innerHTML = `<form class="replyForm" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logReply(event, swap)">
-            <textarea name="txt"></textarea><br>
+        reply.classList.add("replyForm")
+        reply.setAttribute('hx-post', "/.netlify/functions/postMessage")
+        reply.setAttribute('hx-target', "#feed")
+        reply.setAttribute('hx-swap', "afterbegin")
+        reply.setAttribute('hx-trigger', "submit")
+
+        reply.innerHTML = `<textarea name="txt"></textarea><br>
             <input value=${ref} name="ref" style="display: none">
             <input id="by_reply" class="by" name="by" value="${localStorage?.getItem('email')}" style="display: none">
             <input id="by_id_reply" name="by_id" class="by" value="${localStorage?.getItem('id')}" style="display: none;">
             <button class="replyToggle" type="submit" onclick="toggleReply(event)">Submit reply</button>
-            <br>
-            </form>`;
+            <br>`;
 
-        event.srcElement.parentNode.insertAdjacentElement('afterend', reply);
+        event.srcElement.insertAdjacentElement('afterend', reply);
 
         // after inserting an element via the DOM, we have to run htmx.process() for htmx to work on the newly inserted element.  documentation from htmx here: https://htmx.org/api/
         htmx.process(document);
@@ -254,12 +258,13 @@
                 // And we'll toggle the Reply button text from "Cancel Reply" back to "Reply"
 
                 // First, we need to get the
-                let replyButton = form.parentElement.previousSibling.lastElementChild;
+                let replyButton = form.previousElementSibling;
+
 
                 replyButton.innerText = "Reply"
              }
 
-            let reply = event.srcElement.parentNode.nextSibling;
+            let reply = event.srcElement.nextElementSibling;
 
             console.log(reply);
 
@@ -450,14 +455,35 @@ htmx.on("htmx:afterSwap", function(evt) {
     console.log(evt);
     console.log(evt.detail.requestConfig.parameters.txt);
     console.log(evt.detail.requestConfig.parameters.id);
+    console.log(evt.detail.pathInfo.requestPath);
 
     // If the swap was a new message
     if (evt.detail.pathInfo.requestPath == "/.netlify/functions/postMessage") {
         // we update the message cache with the updated version of the feed
         localStorage.setItem('cache', document.getElementById('feed').innerHTML);
 
-        // And if it was a reply, we remove the reply form
-        if (evt.detail.requestConfig.triggeringEvent.srcElement.className == "replyForm") {
+        console.log(evt.detail.requestConfig.triggeringEvent.srcElement)
+
+        // And if it was a reply, we trigger the children element to show the reply
+        if (evt.detail.requestConfig.triggeringEvent.srcElement.className = "replyForm") {
+
+            console.log('reply')
+            
+            let form = evt.detail.requestConfig.triggeringEvent.srcElement
+
+            console.log(form);
+            
+            // let parentDiv = form.previousElementSibling;
+
+            // console.log(parentDiv)
+
+            let showChildrenButton = form.nextElementSibling;
+
+            console.log(showChildrenButton)
+
+            showChildrenButton.click();
+
+            // And we remove the reply form
             evt.detail.requestConfig.triggeringEvent.srcElement.remove();
         }
 
@@ -518,9 +544,11 @@ function crosspost(msg) {
     }
     div.post {
         background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%; margin-bottom: 0.75em;
+        border-bottom: solid 1px black;
     }
     p.by {
         font-weight: 600;
+        font-size: 14px;
     }
     p.ts {
         font-style: italic;

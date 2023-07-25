@@ -49,11 +49,11 @@ exports.handler = async (event) => {
                 swap = swap + `
                   <div id=${messages[i].id} ref=${messages[i].ref} class="post">
                     <p class="by" user="${messages[i].by_id}">${username}
-                    <p class="ts">${messages[i].id}
-                    <p class="txt">${messages[i].txt}</p><br>
-                    <button onclick=toggleReply(event);>Reply</button>
+                    <p class="txt">${messages[i].txt}
+                    <p class="ts">${messages[i].id}</p><br>
+                    <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
+                    <button class="relation children" onclick=showChildren(event,'${messages[i].id}')>Show children</button>
                 </div>
-                <button onclick='showChildren(event,'${messages[i].id}')'>Show children</button>
                 `
               }
               else {
@@ -62,11 +62,11 @@ exports.handler = async (event) => {
                 let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
                 
                 swap = swap + `
-                  <button onclick=showParent(event,'${parent}')>Show parent</button>
                   <div id=${messages[i].id} ref=${messages[i].ref} class="post">
+                  <button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button>
                     <p class="by" user="${messages[i].by_id}">${username}
-                    <p class="ts">${messages[i].id}
-                    <p class="txt">${messages[i].txt}</p><br>
+                    <p class="txt">${messages[i].txt}
+                    <p class="ts">${messages[i].id}</p><br>
                     <button onclick=toggleReply(event);>Reply</button>
                 </div>
                 <button onclick=showChildren(event,'${messages[i].ref}')>Show children</button>
@@ -107,11 +107,11 @@ exports.handler = async (event) => {
                 swap = swap + `
                   <div id=${messages[i].id} ref=${messages[i].ref} class="post">
                   <p class="by" user="${messages[0].by_id}">${username}
-                  <p class="ts">${messages[i].id}
-                    <p class="txt">${messages[i].txt}</p><br>
-                    <button onclick=toggleReply(event);>Reply</button>
+                    <p class="txt">${messages[i].txt}
+                    <p class="ts">${messages[i].id}</p><br>
+                    <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
+                    <button class="relation children" onclick=showChildren(event,'${messages[i].id}')>Show children</button>
                 </div>
-                <button onclick=showChildren(event,'${messages[i].id}')>Show children</button>
                 `
               }
               else {
@@ -120,14 +120,14 @@ exports.handler = async (event) => {
                 let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
                 
                 swap = swap + `
-                  <button onclick=showParent(event,'${parent}')>Show parent</button>
                   <div id=${messages[i].id} ref=${messages[i].ref} class="post">
+                  <button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button>
                   <p class="by" user="${messages[0].by_id}">${username}
-                  <p class="ts">${messages[i].id}
-                    <p class="txt">${messages[i].txt}</p><br>
-                    <button onclick=toggleReply(event);>Reply</button>
+                    <p class="txt">${messages[i].txt}
+                    <p class="ts">${messages[i].id}</p><br>
+                    <button class="toggle reply" onclick=toggleReply(event);>Reply</button>
+                    <button class="relation children" onclick=showChildren(event,'${messages[i].ref}')>Show children</button>
                 </div>
-                <button onclick=showChildren(event,'${messages[i].ref}')>Show children</button>
                 `
               }
             }

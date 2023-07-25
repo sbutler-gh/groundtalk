@@ -51,11 +51,11 @@ exports.handler = async (event) => {
 
       swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">
           <p class="by" user="${message[0].by_id}">${username}
-          <p class="ts">${message[0].id}
-          <p class="txt">${message[0].txt}</p><br>
-          <button onclick=toggleReply(event);>Reply</button>
+          <p class="txt">${message[0].txt}
+          <p class="ts">${message[0].id}</p><br>
+          <button class="toggleReply" onclick=toggleReply(event);>Reply</button>
+          <button class="relation children" onclick='showChildren(event,'${message[0].id}')'>Show children</button>
       </div>
-      <button onclick='showChildren(event,'${message[0].id}')'>Show children</button>
       `
     }
     else {
@@ -65,14 +65,14 @@ exports.handler = async (event) => {
       var stringVariable = message[0].ref;
       let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
       
-      swap = `<button onclick=showParent(event,'${parent}')>Show parent</button>
-        <div id=${message[0].id} ref=${message[0].ref} class="post">
+      swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">
+    <button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button>
           <p class="by" user="${message[0].by_id}">${username}
-          <p class="ts">${message[0].id}
-          <p class="txt">${message[0].txt}</p><br>
-          <button onclick=toggleReply(event);>Reply</button>
+          <p class="txt">${message[0].txt}
+          <p class="ts">${message[0].id}</p><br>
+          <button class="toggleReply" onclick=toggleReply(event);>Reply</button>
+          <button class="relation children" onclick=showChildren(event,'${message[0].ref}')>Show children</button>
       </div>
-      <button onclick=showChildren(event,'${message[0].ref}')>Show children</button>
       `
     }
 
