@@ -368,21 +368,32 @@
 
             console.log(sortedList);
 
+            // here, we are setting the indent and display based on the number of hyphens in the ref value, to get the level of "nesting" in the message
+            // first, we count the number of hyphens/nesting level in thisRef (we subtract 3, because that's how many hyphens come from the timestamp, instead of the reply nesting convention)
+             // first-level reply to a parent message will have a level of 1, a reply to a first-level reply will have a level of 2
+            let thisRefNesting = thisRef.split("-").length - 3
 
+            // now we count the nesting and prepare the display of nested comments for each child
             sortedList.forEach(div => {
                 console.log(div);
                 console.log(div.children['2']);
                 var li = document.createElement('li');
                 li.innerHTML = `<a href="#${div.id}">${div.children['2'].innerText}</a>`
 
-                // here we are counting the number of hyphens in the ref value, to get the level of "nesting" of the message.
+                // here we are counting the number of hyphens in the ref value of a child, to get the level of "nesting" of the child.
                 // first-level reply to a parent message will have a level of 1, a reply to a first-level reply will have a level of 2
-                let level = div.getAttribute('ref').split("-").length - 3;
-                console.log(level);
+                let childRefNesting = div.getAttribute('ref').split("-").length - 3;
+                console.log(childRefNesting);
 
                 // now we calculate the indent for nested replies, which we will include as marginLeft in the styling
-                let indent = (level - 1) * 20;
+                // for the purpose of display, this should be based on the difference betwen thisRef's nesting level and the child reply's nesting level
+                // (or else, if you looked at the children of a 3rd level nested reply, the margin would be way off and inconsistent)
+                let nestingDiff = childRefNesting - thisRefNesting;
 
+                // Finally, we determine the indentation
+                let indent = (nestingDiff - 1) * 20;
+
+                // And implement that in the styling
                 li.style.marginLeft = indent + "px";
                 list.appendChild(li);
             })
