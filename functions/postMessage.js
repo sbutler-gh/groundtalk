@@ -43,7 +43,7 @@ exports.handler = async (event) => {
 
     let username = message[0].by.match(/^([^@]*)@/)[1];
     let swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">`
-    let childrenEvent = message[0].id
+    let replyRef = message[0].id
     let reply;
     let time = new Date(message[0].id).toUTCString()
 
@@ -51,8 +51,8 @@ exports.handler = async (event) => {
 
       reply = 1;
 
-      childrenEvent = message[0]?.ref;
-      let parent = childrenEvent.substring(0, childrenEvent.lastIndexOf('-'));
+      replyRef = message[0]?.ref;
+      let parent = replyRef.substring(0, replyRef.lastIndexOf('-'));
 
       swap = swap + `<button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button> `
     }
@@ -60,7 +60,7 @@ exports.handler = async (event) => {
     swap = swap + `<span class="messageHead"><a class="by" href="${message[0].by_id}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
     <p class="txt">${message[0].txt}</p>
     <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
-    <button class="relation children" onclick=showChildren(event,'${childrenEvent}')>Show replies</button>
+    <button class="relation children" onclick=showChildren(event,'${replyRef}')>Show replies</button>
 </div>`
 
     return {

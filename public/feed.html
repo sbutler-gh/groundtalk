@@ -340,7 +340,7 @@
         let parentText = parent.querySelector('.txt').innerText;
 
         div.innerHTML =`
-        <span class="messageHead"><a class="by" href="${parentByID}">${parentUsername}</a><a href="#${parent.id}" class="ts">${parentTime}</a></span>
+        <span class="messageHead"><a class="by" href="${parentByID}">${parentUsername}</a><a href="#${parent.id}" class="relation ts">${parentTime}</a></span>
         <p class="txt">${parentText}</p>
         `
 
@@ -391,15 +391,28 @@
             let thisRefNesting = thisRef.split("-").length - 3
 
             // now we count the nesting and prepare the display of nested comments for each child
-            sortedList.forEach(div => {
-                console.log(div);
-                console.log(div.children['2']);
-                var li = document.createElement('li');
-                li.innerHTML = `<a href="#${div.id}">${div.children['2'].innerText}</a>`
+            sortedList.forEach(message => {
+
+
+
+
+            let div = document.createElement('div');
+            div.classList.add('replyDiv')
+
+
+        let username = message.querySelector('.by').innerText;
+        let byID = message.querySelector('.by').getAttribute('href');
+        let time = message.querySelector('.ts').innerText;
+        let text = message.querySelector('.txt').innerText;
+
+        div.innerHTML =`
+        <span class="messageHead"><a class="by" href="${byID}">${username}</a><a href="#${message.id}" class="relation ts">${time}</a></span>
+        <p class="txt">${text}</p>
+        `
 
                 // here we are counting the number of hyphens in the ref value of a child, to get the level of "nesting" of the child.
                 // first-level reply to a parent message will have a level of 1, a reply to a first-level reply will have a level of 2
-                let childRefNesting = div.getAttribute('ref').split("-").length - 3;
+                let childRefNesting = message.getAttribute('ref').split("-").length - 3;
                 console.log(childRefNesting);
 
                 // now we calculate the indent for nested replies, which we will include as marginLeft in the styling
@@ -411,8 +424,8 @@
                 let indent = (nestingDiff - 1) * 20;
 
                 // And implement that in the styling
-                li.style.marginLeft = indent + "px";
-                list.appendChild(li);
+                div.style.marginLeft = indent + "px";
+                list.appendChild(div);
             })
 
             console.log(list);
@@ -630,6 +643,11 @@ function crosspost(msg) {
 
   .messageHead a.ts {
     font-size: 13px;
+  }
+
+  .relation.ts {
+    pointer-events: all;
+    text-decoration: underline;
   }
 
   /* .messageHead .by::after {

@@ -47,6 +47,8 @@ exports.handler = async (event) => {
 
             let message = ""
 
+            let replyRef = messages[i].id
+
             let username = messages[i].by?.match(/^([^@]*)@/)[1];
 
             message = `<div id=${messages[i].id} ref=${messages[i].ref} class="post">`
@@ -54,6 +56,8 @@ exports.handler = async (event) => {
             if (messages[i]?.ref) {
               var stringVariable = messages[i].ref;
               let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
+
+              replyRef = messages[i].ref
 
               message = message + `<div class="parentSection"><button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button></div>`
             }
@@ -64,7 +68,7 @@ exports.handler = async (event) => {
             <p class="txt">${messages[i].txt}</p>
             <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
             <div class="repliesSection">
-            <button class="relation children" onclick=showChildren(event,'${messages[i].id}')>Show replies</button>
+            <button class="relation children" onclick=showChildren(event,'${replyRef}')>Show replies</button>
             </div>
         </div>`
 
