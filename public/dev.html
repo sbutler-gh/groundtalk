@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+  // add link to groundtalk posts at end of posts?
+  
+  // figure out ids and nesting convention
+
+  // figure out how to display message with specific url
+
+  // authentication / sign -in
+
+  // save mastodon and url preferneces locally in cache
+
+  // social media client, general tool
+
+  // low energy context
+
+  // enter search query, pull from twitter api all searches for the thing, minimal load
+  
+  // image compressor
+
+  // extensions
+
+  // listen for event on twitter post (Find the event), on mastodon post
+
+  // then open the windows, same for groundtalk
+
+  // 1A1A1A -- handle server side
+
+  // groundtalk.land/1 < getMessage "1", netlify function that returns html
+
+  // image upload with squoosh
+</script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Groundtalk — A low-tech social media network</title>
+  <meta property="og:title" content="Groundtalk — A low-tech digital network, people and worker led">
+  <meta name="twitter:title" content="Groundtalk — A low-tech digital network, people and worker led">
+
+  <!-- Description Tags -->
+  <meta name="description" content="Want a network for ourselves — built for low-energy and resilience, led by workers and people, and in service of the worlds we want to make?">
+  <meta property="og:description" content="Want a network for ourselves — built for low-energy and resilience, led by workers and people, and in service of the worlds we want to make?">
+  <meta name="twitter:description" content="Want a network for ourselves — built for low-energy and resilience, led by workers and people, and in service of the worlds we want to make?">
+
+
+  <!-- URL Tags -->
+  <meta property="og:url" content="https://groundtalk.land">
+  <meta property="twitter:url" content="https://groundtalk.land">
+  <meta property="twitter:domain" content="groundtalk.land">
+
+  <!-- Image Tags -->
+  <meta property="og:image" content="https://groundtalk.land/groundtalk.jpg">
+  <meta name="twitter:image" content="https://groundtalk.land/groundtalk.jpg">
+
+    <!-- Other Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:type" content="website">
+    
+  <!-- END OPENGRAPH TAGS -->
+
+<script src="https://unpkg.com/htmx.org@1.8.6"></script>
+<script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
+</head>
+
+<body onload="loadUserDetails()" style="max-width: 100%; width: 800px; margin: auto;">
+<div onclick="location.href='/'" style="position: relative; max-width: 640px; margin: auto; text-align: center; cursor: pointer;" >
+  <img src="./header.svg" style="width: 640px; max-width: 100%";>
+      <div class="header" style="position: absolute; top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); width: 100%;">
+    <h2 style="font-weight: 400;">A cooperative social network,<br>to realize our worlds.</h2>
+    <h1 style="margin-top: 15px;">groundtalk.land</h1>
+    </div>
+  </div>
+<br>
+
+<!-- <nav>
+  <a href="/">Home</a>
+  <a href="/library.html">Library</a>
+  <a href="/dev.html">Dev</a>
+</nav> -->
+
+<div style="margin-left: auto; width: fit-content;">
+  <form style="text-align: right;" id="signInForm" hx-post="/.netlify/functions/signInWithOtp" hx-target="#signInUpdate" hx-trigger="submit">
+   <p style="margin-bottom: 0px;"><strong>Sign in with magic link</strong></p>
+  <label style="margin-top: 5px; display: block;">Email</label>
+  <input type="email" name="email" required>
+  <br>
+  <!-- <a href="" hx-post="/.netlify/functions/forgotPassword" hx-trigger="click">Forgot password?</a>
+  <br>
+  <label style="margin-top: 10px; display: block;">Password</label>
+  <input name="password"><br> -->
+  <button type="submit" style="display: block; margin: 10px 0 10px auto">Send Magic Link</button>
+  <span id="signInUpdate"></span>
+  </form>
+</div>
+
+<div style="margin: auto">
+          <!-- <label>Posting as ...</label><input name="author">
+          <p class="center"><em>Enter new post</em></p>
+              <br><br> -->
+      <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
+          <textarea name="txt" style="width: 350px; height: 100px"></textarea>
+          <input name="by" class="by" id="by_main" style="display: none;">
+          <input name="username" class="username" id="username_main" style="display: none;">
+          <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
+          <div style="display: flex; margin-top: 10px;">
+              <div class="checkbox"><input type="checkbox" value="Twitter"><label>Post to Twitter</label></div>
+              <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Post to Mastodon</label></div>
+          </div>
+      <button style="margin-left: auto; display: block;">Submit</button>
+      </form>
+      <div style="max-width: 350px; margin: 30px auto 30px auto;">
+      <hr>
+      <!-- <button style="margin-top: 10px; margin-left: auto; color: blue; text-decoration: none; cursor: pointer;" onclick="getMessages(0)">Refresh messages</button> -->
+      </div>
+      <br>
+      <div id="feed" class="center">
+
+      </div>
+</div>
+
+</body>
+<script>
+
+  function loadUserDetails() {
+      if (localStorage.getItem('username') && localStorage.getItem('username') != "undefined") {
+
+          let profileDiv = document.createElement('div');
+          profileDiv.id = "profileDiv"
+          profileDiv.style = "text-align: right"
+          profileDiv.innerHTML = `<p id="profileUsername" class="user">${localStorage.getItem('username')}</p>
+          <button onclick="toggleChangeUsername(event)" style="margin-left: auto">Change username</button>
+          `
+
+          if (document.getElementById('signInForm')) {
+            document.getElementById('signInForm').replaceWith(profileDiv)
+          }
+          else {
+            document.getElementById('profileDiv').replaceWith(profileDiv)
+          }
+
+          document.getElementById('username_main').setAttribute('value', localStorage.getItem('username'));
+          document.getElementById('by_main').setAttribute('value', localStorage.getItem('id'));
+      }
+
+      else {
+          auth()
+      }
+  }
+
+  function auth() {
+      if (window.location.href.includes('magiclink')) {
+
+      console.log(window.location);
+      let params_url = window.location.href.replace('#', '?')
+      console.log(params_url);
+      let params = new URLSearchParams(params_url);
+      console.log([...params])
+      console.log([...params][0][1]);
+
+      // console.log([...params.[2].[1]])
+
+      const xhr = new XMLHttpRequest();
+
+      // adding timestamp value as query parameter
+      const url = `/.netlify/functions/signInWithRefreshToken/?refresh_token=${params.get('refresh_token')}`
+
+      xhr.open("GET", url);
+
+      xhr.onload = function () {
+
+          if (xhr.status == 200) {
+
+              let response = JSON.parse(xhr.response);
+              console.log(response);
+
+              localStorage.setItem('id', response.user.id);
+              localStorage.setItem('email', response.user.email);
+              localStorage.setItem('username', response.user?.user_metadata?.username)
+              localStorage.setItem('access_token', response.access_token);
+              localStorage.setItem('session', response);
+
+              loadUserDetails()
+          }
+      };
+      xhr.onerror = function () {
+          // ...handle/report error...
+      };
+
+      xhr.send();
+
+      }
+
+  }
+
+  function toggleChangeUsername(event) {
+
+    if (event.srcElement.innerText == "Change username") {
+
+      let usernameInput = document.createElement('input');
+      usernameInput.id = "usernameInput"
+      usernameInput.value = document.getElementById('profileUsername').innerText;
+      usernameInput.style = "margin-bottom: 5px;"
+      document.getElementById('profileUsername').replaceWith(usernameInput);
+
+      event.srcElement.innerText = "Submit new username";
+
+      let cancel = document.createElement('button');
+      cancel.innerText = "Cancel"
+      cancel.style = "margin-left: auto;"
+      cancel.setAttribute('onclick', 'toggleChangeUsername(event)');
+
+      event.srcElement.insertAdjacentElement('afterend', cancel)
+
+    }
+    else if (event.srcElement.innerText == "Cancel") {
+      document.getElementById('profileDiv').innerHTML = `<p id="profileUsername" class="user">${localStorage.getItem('username')}</p>
+          <button onclick="toggleChangeUsername(event)" style="margin-left: auto">Change username</button>
+          `
+    }
+    else if (event.srcElement.innerText == "Submit new username") {
+      updateUsername(document.getElementById('usernameInput').value)
+    }
+
+  }
+
+  function updateUsername(newUsername) {
+    console.log(newUsername)
+
+    const xhr = new XMLHttpRequest();
+
+    // adding newUsername and id values as query parameter
+    const url = `/.netlify/functions/updateUsername/?username=${newUsername}&id=${localStorage.getItem('id')}&email=${localStorage.getItem('email')}`
+
+    xhr.open("POST", url);
+    xhr.setRequestHeader('Authorization', 'apikey ' + localStorage.getItem('access_token'));
+
+        xhr.onload = function () {
+            console.log(xhr.response);
+
+            if (xhr.status == 200) {
+
+              localStorage.setItem('username', newUsername);
+              loadUserDetails()
+
+            // localStorage.setItem('username');
+            // loadUserDetails();
+
+
+            }
+        };
+        xhr.onerror = function () {
+            // ...handle/report error...
+            console.log('error in updatingUsername');
+            console.log(xhr)
+        };
+
+        xhr.send();
+  }
+
+  function toggleReply(event) {
+
+      console.log(event);
+
+      // If the button currently says "Reply" and is clicked, we will handle that accordingly.
+      // Otherwise, if the button currently says "Cancel reply", we'll go down to the else statement below and handle accordingly.
+      if (event.srcElement.innerText == "Reply") {
+
+      // We are preparing a comment reply form, which will include pre-populating the "ref" value for the reply.
+      let ref;
+      
+      // The "ref" value is a chain going back to a top-level message.
+      // 2023-07-23T09:44:38.787+00:00-1 is the first reply to a top-level message.
+      // 2023-07-23T09:44:38.787+00:00-2 is the second reply to a top-level message.
+      // 2023-07-23T09:44:38.787+00:00-1-1 is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00-1
+      // 2023-07-23T09:44:38.787+00:00-1-2 is the second reply to the message where ref=2023-07-23T09:44:38.787+00:00-2
+      // 2023-07-23T09:44:38.787+00:00-1-1-1 is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00-1-1
+
+      // to get the ref value for the new reply, we first need the ref value for the message we're replying to
+      let parent_ref;
+      
+      // we also need to check the number of siblings in the chain — the Nth number of replies to the same message (starting at index of 1)
+
+      let siblings;
+
+      // if we're replying to a top-level comment, the parent_ref value will be null
+      // we also need to handle this case a little carefully with the siblings value
+      if (event.srcElement.parentNode.getAttribute('ref') == "null") {
+          console.log('top level message')
+
+          // since there is no ref value for this message, we will use it's id instead
+          parent_ref = event.srcElement.parentNode.id;
+
+           // to determine the amount of siblings in this chain, we only want to count all the siblings on the first level — e.g. only those with a single hyphen
+           let nodeList = document.querySelectorAll(`[ref^="${parent_ref}"]`);
+
+          //  however, this will return a list of ALL the messages with reference values that begin with the parent_ref — including those on the second, third, fourth levels.
+          // So we want to use a regex to find only the siblings on the first level — by filtering the nodeList above for values that end in a :00-[number]
+          const regex = new RegExp(/:00-\d+$/i);
+
+          console.log(nodeList);
+
+          console.log(Array.from(nodeList));
+          
+          // console.log(Array.from(nodeList).filter(node => regex.test(node)))
+
+          let sibs = Array.from(nodeList).filter(node => regex.test(node.attributes['ref'].nodeValue) == true);
+
+          for (i = 0; i < nodeList.length; i++) {
+              console.log(nodeList[i].attributes['ref'].nodeValue);
+              console.log(regex.test(nodeList[i].attributes['ref'].nodeValue))
+          }
+
+          console.log(sibs);
+
+          // console.log(siblingNodeList)
+
+
+          // console.log(array.from(document.querySelectorAll(`[ref^="${parent_ref}"][ref$=":00-"]`)).filter(node => node.length ))
+          siblings = sibs.length + 1;
+      }
+      else {
+          console.log('not top level message');
+          parent_ref = event.srcElement.parentNode.getAttribute('ref');
+          console.log(parent_ref);
+          console.log(document.querySelectorAll(`[ref^="${parent_ref}"]`));
+          siblings = document.querySelectorAll(`[ref^="${parent_ref}"]`).length;
+          console.log(siblings);
+      }
+
+      // Finally, we set the ref value for the new message reply based on the siblings found in the chain above
+
+      ref = parent_ref + "-" + siblings
+      console.log(ref);
+
+
+      // Now we create an element which will be inserted into the DOM and contains the form and textarea for the new message, including a hidden input value with the "ref" for the message reply — that we determined above
+      let reply = document.createElement('form');
+
+      reply.classList.add("replyForm")
+      reply.setAttribute('hx-post', "/.netlify/functions/postMessage")
+      reply.setAttribute('hx-target', "#feed")
+      reply.setAttribute('hx-swap', "afterbegin")
+      reply.setAttribute('hx-trigger', "submit")
+
+      reply.innerHTML = `<textarea name="txt"></textarea><br>
+          <input value=${ref} name="ref" style="display: none">
+          <input id="reply_username" class="username" name="username" value="${localStorage?.getItem('username')}" style="display: none">
+          <input id="by_reply" name="by" class="by" value="${localStorage?.getItem('id')}" style="display: none;">
+          <button class="replyToggle" type="submit" onclick="toggleReply(event)">Submit reply</button>
+          <br>`;
+
+      event.srcElement.insertAdjacentElement('afterend', reply);
+
+      // after inserting an element via the DOM, we have to run htmx.process() for htmx to work on the newly inserted element.  documentation from htmx here: https://htmx.org/api/
+      htmx.process(document);
+
+      // We change the reply button text to "Cancel reply", for toggling purposes — so when it's clicked again, it will toggle as expected
+      event.srcElement.innerText = "Cancel reply"
+
+      }
+      else {
+
+          // If this returns true, this event triggered on submission of a reply form
+          if (event.target.outerText == "Submit reply") {
+
+              // So we'll first find the form
+              let form = event.target.parentElement;
+
+              // And set it's display to none
+              form.style.display = "none";
+
+              // And we'll toggle the Reply button text from "Cancel Reply" back to "Reply"
+
+              // First, we need to get the
+              let replyButton = form.previousElementSibling;
+
+
+              replyButton.innerText = "Reply"
+           }
+
+          let reply = event.srcElement.nextElementSibling;
+
+          console.log(reply);
+
+          reply.remove();
+
+          event.srcElement.innerText = "Reply"
+      }
+
+
+  }
+
+  function getMessages(id) {
+
+      const xhr = new XMLHttpRequest();
+
+      // adding timestamp value as query parameter
+      const url = `/.netlify/functions/getMessages/?id=${id}`
+
+      xhr.open("GET", url);
+
+      xhr.onload = function () {
+          console.log(xhr.response);
+
+          if (xhr.status == 200) {
+
+          // If ID is 0, we set feed equal to the response
+          if (id == 0) {
+              document.getElementById('feed').innerHTML = xhr.response;
+          }
+          // Otherwise, we append the response on top of the existing cached feed
+          else {
+              document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML;
+
+          }
+
+          // and we update the message cache in local storage with the updated version of the feed
+          localStorage.setItem('cache_dev', document.getElementById('feed').innerHTML);
+          }
+      };
+      xhr.onerror = function () {
+          // ...handle/report error...
+          console.log('error in loadCacheThenGetMessages');
+          console.log(xhr)
+      };
+
+      xhr.send();
+  }
+
+  function loadCacheThenGetMessages() {
+
+      // ts = timestamp
+      // we will append this as a query parameter to the GET request, to indicate which messages (if any) to retrieve in the backend
+      // because some messages may already be cached locally, as a way of lowering the amount of requests and repeated data transfers
+      let id = 0;
+
+      if (localStorage?.cache_dev) {
+
+          // setting the feed to all of the messages in the cache
+          document.getElementById('feed').innerHTML = localStorage?.cache_dev;
+
+          // Set the timestamp value equal to the timestamp value of the latest message in the cache.
+          id = document.getElementsByClassName("post")[0].id;
+      }
+
+      getMessages(id);
+  }
+
+  function showParent(event,parentRef) {
+
+  if (event.srcElement.innerText == "Show parent") {
+      console.log(parentRef)
+      console.log(event);
+      // let list = document.createElement('ul');
+      let div = document.createElement('div');
+      div.classList.add('parentDiv')
+
+      // find the parent by searching for element with ID or ref value that starts with thisref
+
+      let parent = document.querySelector(`[ref="${[parentRef]}"], [id="${[parentRef]}"]`);
+
+      let parentUsername = parent.querySelector('.by').innerText;
+      let parentByID = parent.querySelector('.by').getAttribute('href');
+      let parentTime = parent.querySelector('.ts').innerText;
+      let parentText = parent.querySelector('.txt').innerText;
+
+      div.innerHTML =`
+      <span class="messageHead"><a class="by" href="${parentByID}">${parentUsername}</a><a href="#${parent.id}" class="relation ts">${parentTime}</a></span>
+      <p class="txt">${parentText}</p>
+      `
+
+      event.srcElement.insertAdjacentElement('afterend', div);
+      event.srcElement.innerText = "Hide";
+
+      // useful if we want to get a tree of parents
+      
+      // nodeList.forEach(div => {
+      //     console.log(div);
+      //     console.log(div.children['2']);
+      //     var li = document.createElement('li');
+      //     li.innerText = div.children['2'].innerText;
+      //     list.appendChild(li);
+      // })
+
+  }
+  else {
+      console.log('minimize')
+      event.srcElement.innerText = "Show parent";
+      event.srcElement.nextSibling.remove();
+  }
+
+}
+
+  function showChildren(event,thisRef) {
+
+      if (event.srcElement.innerText == "Show replies") {
+          console.log(thisRef)
+          console.log(event);
+          let list = document.createElement('ul');
+
+          // find all nodes with ref value that starts with thisref
+
+          let nodeList = document.querySelectorAll(`[ref^="${thisRef}-"]`);
+          console.log(nodeList);
+
+          // If children with same thisRef value exist
+          if ([...nodeList].length > 0) {
+
+          let sortedList = [...nodeList].sort((a, b) => (a.attributes['ref'].nodeValue.substring(30) > b.attributes['ref'].nodeValue.substring(30)) ? 1 : -1);
+
+          console.log(sortedList);
+
+          // here, we are setting the indent and display based on the number of hyphens in the ref value, to get the level of "nesting" in the message
+          // first, we count the number of hyphens/nesting level in thisRef (we subtract 3, because that's how many hyphens come from the timestamp, instead of the reply nesting convention)
+           // first-level reply to a parent message will have a level of 1, a reply to a first-level reply will have a level of 2
+          let thisRefNesting = thisRef.split("-").length - 3
+
+          // now we count the nesting and prepare the display of nested comments for each child
+          sortedList.forEach(message => {
+
+
+
+
+          let div = document.createElement('div');
+          div.classList.add('replyDiv')
+
+
+      let username = message.querySelector('.by').innerText;
+      let byID = message.querySelector('.by').getAttribute('href');
+      let time = message.querySelector('.ts').innerText;
+      let text = message.querySelector('.txt').innerText;
+
+      div.innerHTML =`
+      <span class="messageHead"><a class="by" href="${byID}">${username}</a><a href="#${message.id}" class="relation ts">${time}</a></span>
+      <p class="txt">${text}</p>
+      `
+
+              // here we are counting the number of hyphens in the ref value of a child, to get the level of "nesting" of the child.
+              // first-level reply to a parent message will have a level of 1, a reply to a first-level reply will have a level of 2
+              let childRefNesting = message.getAttribute('ref').split("-").length - 3;
+              console.log(childRefNesting);
+
+              // now we calculate the indent for nested replies, which we will include as marginLeft in the styling
+              // for the purpose of display, this should be based on the difference betwen thisRef's nesting level and the child reply's nesting level
+              // (or else, if you looked at the children of a 3rd level nested reply, the margin would be way off and inconsistent)
+              let nestingDiff = childRefNesting - thisRefNesting;
+
+              // Finally, we determine the indentation
+              let indent = (nestingDiff - 1) * 20;
+
+              // And implement that in the styling
+              div.style.marginLeft = indent + "px";
+              list.appendChild(div);
+          })
+
+          console.log(list);
+
+          event.srcElement.insertAdjacentElement('afterend', list);
+          event.srcElement.innerText = "Hide replies";
+      }
+
+      // If no replies found
+      else {
+          let p = document.createElement('p');
+          p.className = "noReplyMsg"
+          p.style = "font-size: 13px; font-style: italic; color: darkbrown;"
+          p.innerText = "No replies on this post yet"
+          event.srcElement.insertAdjacentElement('afterend', p);
+
+          setTimeout(function () {
+              p.remove()
+          }
+          , 2500)
+      }
+
+      }
+      else {
+          console.log('minimize')
+          event.srcElement.innerText = "Show replies";
+          event.srcElement.nextSibling.remove();
+      }
+
+  }
+
+
+  loadCacheThenGetMessages();
+
+  function logData(event, swap) {
+      console.log('logdata');
+          console.log(swap);
+          console.log(event);
+          const xhr = event.detail.xhr;
+          console.log(xhr);
+  }   
+
+  function sortList(ul){
+  var new_ul = ul.cloneNode(false);
+
+  // Add all lis to an array
+  var lis = [];
+  for(var i = ul.childNodes.length; i--;){
+      if(ul.childNodes[i].nodeName === 'LI')
+          lis.push(ul.childNodes[i]);
+  }
+
+  // Sort the lis in descending order
+  lis.sort(function(a, b){
+     return parseInt(b.childNodes[0].data , 10) - 
+            parseInt(a.childNodes[0].data , 10);
+  });
+
+  // Add them into the ul in order
+  for(var i = 0; i < lis.length; i++)
+      new_ul.appendChild(lis[i]);
+  ul.parentNode.replaceChild(new_ul, ul);
+}
+
+
+htmx.on("htmx:afterSwap", function(evt) {
+  console.log('after swap')
+  console.log(evt);
+  console.log(evt.detail.requestConfig.parameters.txt);
+  console.log(evt.detail.requestConfig.parameters.id);
+  console.log(evt.detail.pathInfo.requestPath);
+
+  // If the swap was a new message
+  if (evt.detail.pathInfo.requestPath == "/.netlify/functions/postMessage") {
+      // we update the message cache with the updated version of the feed
+      localStorage.setItem('cache_dev', document.getElementById('feed').innerHTML);
+
+      console.log(evt.detail.requestConfig.triggeringEvent.srcElement)
+
+      // And if it was a reply, we trigger the children element to show the reply
+      if (evt.detail.requestConfig.parameters.ref) {
+
+          console.log('reply')
+          
+          let form = evt.detail.requestConfig.triggeringEvent.srcElement
+
+          console.dir(form);
+          
+          let parent = form.parentElement;
+
+          console.log(parent);
+
+          // console.log(parentDiv)
+
+          let showChildrenButton = form.parentElement.lastElementChild.querySelector('.children');
+
+          console.log(showChildrenButton)
+
+          showChildrenButton.click();
+
+          // And we remove the reply form
+          form.remove();
+      }
+
+      
+  }
+
+
+  if (document.querySelector('input[value="Twitter"]').checked || document.querySelector('input[value="Mastodon"]').checked) {
+
+      console.log('crosspost!')
+
+      crosspost(evt.detail.requestConfig.parameters.txt)
+
+  }
+});
+
+//  this function below is a work-in-progress, for local automated cross-posting
+
+// for extension when browsing other sites: css and html injection when browsing walled gardens like tiwtter and linkedin and facebook to crosspost out and mastodon
+
+
+// for uploading to ground talk:
+// integer pk, natural id which is url that contains post data
+// gah integer pk makes sense (esp for many-to-many like replies), but for offline / local-first / distributed then uuidv7 makes sense
+// automatically compress images on uploading
+// choice of "upload to groundtalk"
+// email notifications on daily basis
+// implement replies
+// show where you are posting from on groundtalk with your author id?
+
+
+
+// authenticate groundtalk
+// authenticate mastodon?
+
+
+function crosspost(msg) {
+  
+  if (document.querySelector('input[value="Twitter"]').checked) {
+      var twitter = window.open(`https://twitter.com/intent/tweet?text=${msg}`, 'twitter','width=500,height=500');
+
+  }
+  
+  if (document.querySelector('input[value="Mastodon"]').checked) {
+      
+      let instance_url = "https://kolektiva.social"
+      var mastodon = window.open(`https://kolektiva.social/share?text=${msg}`, 'mastodon','width=500,height=500');
+
+  }
+}
+</script>
+
+<style>
+  .center {
+      margin: auto;
+      width: fit-content;
+      display: block;
+  }
+  div.post {
+      background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%; margin-bottom: 0.75em;
+      border-bottom: solid 1px black;
+      position: relative;
+  }
+  p.by {
+      font-weight: 600;
+      font-size: 14px;
+  }
+  p.ts {
+      font-style: italic;
+      font-size: 12px;
+  }
+  p.ref {
+      display: none;
+  }
+  @media only screen and (max-width: 600px) {
+
+  .header h2{
+    font-size: 1.3em;
+    line-height: normal;
+  }
+  .header h1{
+    font-size: 1.7em;
+    line-height: normal;
+    margin-top: -11px !important;
+  }
+}
+button {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.checkbox > label {
+  margin-left: 5px;
+}
+
+.user {
+  font-weight: bold;
+}
+
+p.txt {
+  white-space: pre-line;
+}
+
+.messageHead a {
+  /* cursor: pointer; */
+  color: #000000a8;
+  /* margin-right: 10px; */
+  font-size: 15px;
+  text-decoration: none;
+  pointer-events: none;
+}
+
+.messageHead a.by {
+  text-decoration: none;
+  pointer-events: none;
+  margin-right: 5px;
+}
+
+.messageHead a.ts {
+  font-size: 13px;
+}
+
+.relation.ts {
+  pointer-events: all;
+  text-decoration: underline;
+}
+
+/* .messageHead .by::after {
+  content: '•';
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 10px;
+} */
+
+/* .messageHead .by {
+  font-size: 16px;
+} */
+/* .messageHead .ts::after {
+  content: ')';
+} */
+/* .messageHead .ts::before {
+  content: '(';
+  margin-left: 5px;
+} */
+
+button.reply {
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  color: mediumblue;
+  cursor: pointer;
+}
+
+/* .parentSection {
+  border-bottom: solid 1px grey;
+  width: 100%
+} */
+
+button.relation {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: grey;
+  margin: 5px 0px;
+}
+
+/* .parentSection {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px
+}
+
+.parentSection > p {
+  margin: 0px;
+} */
+
+.repliesSection {
+  margin-top: 10px;
+}
+
+.parentSection a.ts {
+  pointer-events: all !important;
+  text-decoration: underline;
+}
+/* 
+.messageHead a:hover {
+  text-decoration: underline;
+} */
+
+button.parent {
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 13px; */
+}
+
+.parentDiv{
+  margin: 10px 0px;
+}
+</style>
+</html>
