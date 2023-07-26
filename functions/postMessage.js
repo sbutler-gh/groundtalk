@@ -66,7 +66,9 @@ exports.handler = async (event) => {
     swap = swap + `<span class="messageHead"><a class="by" href="${message[0].by}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
     <p class="txt">${message[0].txt}</p>
     <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
+    <div class="repliesSection">
     <button class="relation children" onclick=showChildren(event,'${replyRef}')>Show replies</button>
+    </div>
 </div>`
 
     return {
