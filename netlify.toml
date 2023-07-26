@@ -4,7 +4,7 @@
 
 [[redirects]]
   from = "/feed"
-  to = "/feed"
+  to = "/index"
   status = 200
 
 [[redirects]]
