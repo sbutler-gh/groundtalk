@@ -66,12 +66,12 @@ exports.handler = async (event) => {
       let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
       
       swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">
-    <button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button>
+    <button class="relation parent" onclick=showParent(event,'${parent}')>Show thread</button>
           <p class="by" user="${message[0].by_id}">${username}
           <p class="txt">${message[0].txt}
           <p class="ts">${message[0].id}</p><br>
           <button class="toggleReply" onclick=toggleReply(event);>Reply</button>
-          <button class="relation children" onclick=showChildren(event,'${message[0].ref}')>Show children</button>
+          <button class="relation children" onclick=showChildren(event,'${message[0].ref}')>Show repliess</button>
       </div>
       `
     }

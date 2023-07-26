@@ -52,7 +52,7 @@ exports.handler = async (event) => {
                     <p class="txt">${messages[i].txt}
                     <p class="ts">${messages[i].id}</p><br>
                     <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
-                    <button class="relation children" onclick=showChildren(event,'${messages[i].id}')>Show children</button>
+                    <button class="relation children" onclick=showChildren(event,'${messages[i].id}')>Show replies</button>
                 </div>
                 `
               }
@@ -63,13 +63,13 @@ exports.handler = async (event) => {
                 
                 swap = swap + `
                   <div id=${messages[i].id} ref=${messages[i].ref} class="post">
-                  <button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button>
+                  <button class="relation parent" onclick=showParent(event,'${parent}')>Show thread</button>
                     <p class="by" user="${messages[i].by_id}">${username}
                     <p class="txt">${messages[i].txt}
                     <p class="ts">${messages[i].id}</p><br>
                     <button onclick=toggleReply(event);>Reply</button>
                 </div>
-                <button onclick=showChildren(event,'${messages[i].ref}')>Show children</button>
+                <button onclick=showChildren(event,'${messages[i].ref}')>Show replies</button>
                 `
               }
             }
@@ -110,7 +110,7 @@ exports.handler = async (event) => {
                     <p class="txt">${messages[i].txt}
                     <p class="ts">${messages[i].id}</p><br>
                     <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
-                    <button class="relation children" onclick=showChildren(event,'${messages[i].id}')>Show children</button>
+                    <button class="relation children" onclick=showChildren(event,'${messages[i].id}')>Show replies</button>
                 </div>
                 `
               }
@@ -121,12 +121,12 @@ exports.handler = async (event) => {
                 
                 swap = swap + `
                   <div id=${messages[i].id} ref=${messages[i].ref} class="post">
-                  <button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button>
+                  <button class="relation parent" onclick=showParent(event,'${parent}')>Show thread</button>
                   <p class="by" user="${messages[0].by_id}">${username}
                     <p class="txt">${messages[i].txt}
                     <p class="ts">${messages[i].id}</p><br>
                     <button class="toggle reply" onclick=toggleReply(event);>Reply</button>
-                    <button class="relation children" onclick=showChildren(event,'${messages[i].ref}')>Show children</button>
+                    <button class="relation children" onclick=showChildren(event,'${messages[i].ref}')>Show replies</button>
                 </div>
                 `
               }

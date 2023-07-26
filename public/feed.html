@@ -323,7 +323,7 @@
 
     function showParent(event,parentRef) {
 
-    if (event.srcElement.innerText == "Show parent") {
+    if (event.srcElement.innerText == "Show thread") {
         console.log(parentRef)
         console.log(event);
         let list = document.createElement('ul');
@@ -337,7 +337,7 @@
         p.innerHTML = `<a href="#${parent.id}">${parent.children['2'].innerText}</a>`
 
         event.srcElement.insertAdjacentElement('afterend', p);
-        event.srcElement.innerText = "Minimize";
+        event.srcElement.innerText = "Hide";
 
         // useful if we want to get a tree of parents
         // nodeList.forEach(div => {
@@ -351,7 +351,7 @@
     }
     else {
         console.log('minimize')
-        event.srcElement.innerText = "Show parent";
+        event.srcElement.innerText = "Show thread";
         event.srcElement.nextSibling.remove();
     }
 
@@ -359,7 +359,7 @@
 
     function showChildren(event,thisRef) {
 
-        if (event.srcElement.innerText == "Show children") {
+        if (event.srcElement.innerText == "Show replies") {
             console.log(thisRef)
             console.log(event);
             let list = document.createElement('ul');
@@ -368,6 +368,9 @@
 
             let nodeList = document.querySelectorAll(`[ref^="${thisRef}-"]`);
             console.log(nodeList);
+
+            // If children with same thisRef value exist
+            if ([...nodeList].length > 0) {
 
             let sortedList = [...nodeList].sort((a, b) => (a.attributes['ref'].nodeValue.substring(30) > b.attributes['ref'].nodeValue.substring(30)) ? 1 : -1);
 
@@ -406,11 +409,27 @@
             console.log(list);
 
             event.srcElement.insertAdjacentElement('afterend', list);
-            event.srcElement.innerText = "Minimize";
+            event.srcElement.innerText = "Hide";
+        }
+
+        // If no replies found
+        else {
+            let p = document.createElement('p');
+            p.className = "noReplyMsg"
+            p.style = "font-size: 13px; font-style: italic; color: darkbrown;"
+            p.innerText = "No replies on this post yet"
+            event.srcElement.insertAdjacentElement('afterend', p);
+
+            setTimeout(function () {
+                p.remove()
+            }
+            , 2500)
+        }
+
         }
         else {
             console.log('minimize')
-            event.srcElement.innerText = "Show children";
+            event.srcElement.innerText = "Show replies";
             event.srcElement.nextSibling.remove();
         }
 
@@ -545,6 +564,7 @@ function crosspost(msg) {
     div.post {
         background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%; margin-bottom: 0.75em;
         border-bottom: solid 1px black;
+        position: relative;
     }
     p.by {
         font-weight: 600;
@@ -580,5 +600,12 @@ function crosspost(msg) {
 
   .user {
     font-weight: bold;
+  }
+
+  button.parent {
+    /* position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 13px; */
   }
 </style>
