@@ -323,28 +323,32 @@
 
     function showParent(event,parentRef) {
 
-    if (event.srcElement.innerText == "Show thread") {
+    if (event.srcElement.innerText == "Show parent") {
         console.log(parentRef)
         console.log(event);
-        let list = document.createElement('ul');
-        let p = document.createElement('p');
+        // let list = document.createElement('ul');
+        let div = document.createElement('div');
+        div.classList.add('parentDiv')
 
-        // find all nodes with ref value that starts with thisref
+        // find the parent by searching for element with ID or ref value that starts with thisref
 
         let parent = document.querySelector(`[ref="${[parentRef]}"], [id="${[parentRef]}"]`);
-        console.log(parent);
 
-        console.log(parent.children);
+        let parentUsername = parent.querySelector('.by').innerText;
+        let parentByID = parent.querySelector('.by').getAttribute('href');
+        let parentTime = parent.querySelector('.ts').innerText;
+        let parentText = parent.querySelector('.txt').innerText;
 
-        let text = parent.querySelector('.txt').innerText;
-        
+        div.innerHTML =`
+        <span class="messageHead"><a class="by" href="${parentByID}">${parentUsername}</a><a href="#${parent.id}" class="ts">${parentTime}</a></span>
+        <p class="txt">${parentText}</p>
+        `
 
-        p.innerHTML = `<a href="#${parent.id}">${text}</a>`
-
-        event.srcElement.insertAdjacentElement('afterend', p);
-        event.srcElement.innerText = "Hide thread";
+        event.srcElement.insertAdjacentElement('afterend', div);
+        event.srcElement.innerText = "Hide";
 
         // useful if we want to get a tree of parents
+        
         // nodeList.forEach(div => {
         //     console.log(div);
         //     console.log(div.children['2']);
@@ -356,7 +360,7 @@
     }
     else {
         console.log('minimize')
-        event.srcElement.innerText = "Show thread";
+        event.srcElement.innerText = "Show parent";
         event.srcElement.nextSibling.remove();
     }
 
@@ -495,20 +499,22 @@ htmx.on("htmx:afterSwap", function(evt) {
             
             let form = evt.detail.requestConfig.triggeringEvent.srcElement
 
-            console.log(form);
+            console.dir(form);
             
-            // let parentDiv = form.previousElementSibling;
+            let parent = form.parentElement;
+
+            console.log(parent);
 
             // console.log(parentDiv)
 
-            let showChildrenButton = form.nextElementSibling;
+            let showChildrenButton = form.parentElement.lastElementChild;
 
             console.log(showChildrenButton)
 
             showChildrenButton.click();
 
             // And we remove the reply form
-            evt.detail.requestConfig.triggeringEvent.srcElement.remove();
+            form.remove();
         }
 
         
@@ -608,12 +614,22 @@ function crosspost(msg) {
   }
 
   .messageHead a {
-    text-decoration: none;
     /* cursor: pointer; */
     color: #000000a8;
     /* margin-right: 10px; */
     font-size: 15px;
+    text-decoration: none;
     pointer-events: none;
+  }
+
+  .messageHead a.by {
+    text-decoration: none;
+    pointer-events: none;
+    margin-right: 5px;
+  }
+
+  .messageHead a.ts {
+    font-size: 13px;
   }
 
   /* .messageHead .by::after {
@@ -626,13 +642,13 @@ function crosspost(msg) {
   /* .messageHead .by {
     font-size: 16px;
   } */
-  .messageHead .ts::after {
+  /* .messageHead .ts::after {
     content: ')';
-  }
-  .messageHead .ts::before {
+  } */
+  /* .messageHead .ts::before {
     content: '(';
     margin-left: 5px;
-  }
+  } */
 
   button.reply {
     background: none;
@@ -641,6 +657,39 @@ function crosspost(msg) {
     text-decoration: underline;
     color: mediumblue;
     cursor: pointer;
+  }
+
+  /* .parentSection {
+    border-bottom: solid 1px grey;
+    width: 100%
+  } */
+
+  button.relation {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    color: grey;
+    margin: 5px 0px;
+  }
+
+  /* .parentSection {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px
+  }
+
+  .parentSection > p {
+    margin: 0px;
+  } */
+
+  .repliesSection {
+    margin-top: 10px;
+  }
+
+  .parentSection a.ts {
+    pointer-events: all !important;
+    text-decoration: underline;
   }
 /* 
   .messageHead a:hover {
@@ -652,5 +701,9 @@ function crosspost(msg) {
     top: 0;
     left: 0;
     font-size: 13px; */
+  }
+
+  .parentDiv{
+    margin: 10px 0px;
   }
 </style>

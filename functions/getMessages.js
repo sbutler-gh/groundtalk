@@ -55,7 +55,7 @@ exports.handler = async (event) => {
               var stringVariable = messages[i].ref;
               let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
 
-              message = message + `<button class="relation parent" onclick=showParent(event,'${parent}')>Show thread</button> `
+              message = message + `<div class="parentSection"><button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button></div>`
             }
 
             let time = new Date(messages[i].id).toUTCString()
@@ -63,7 +63,9 @@ exports.handler = async (event) => {
             message = message + `<span class="messageHead"><a class="by" href="${messages[i].by_id}">${username}</a><a href="#${messages[i].id}" class="ts">${time}</a></span>
             <p class="txt">${messages[i].txt}</p>
             <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
+            <div class="repliesSection">
             <button class="relation children" onclick=showChildren(event,'${messages[i].id}')>Show replies</button>
+            </div>
         </div>`
 
         swap = swap + message;

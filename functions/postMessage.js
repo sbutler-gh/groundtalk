@@ -54,7 +54,7 @@ exports.handler = async (event) => {
       childrenEvent = message[0]?.ref;
       let parent = childrenEvent.substring(0, childrenEvent.lastIndexOf('-'));
 
-      swap = swap + `<button class="relation parent" onclick=showParent(event,'${parent}')>Show thread</button> `
+      swap = swap + `<button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button> `
     }
 
     swap = swap + `<span class="messageHead"><a class="by" href="${message[0].by_id}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
