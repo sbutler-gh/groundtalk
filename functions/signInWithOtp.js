@@ -24,7 +24,7 @@ exports.handler = async (event) => {
     const { user, session, error } = await supabase.auth.signInWithOtp({
         email: form.email,
         options: {
-            emailRedirectTo: 'http://localhost:8888/feed.html',
+            emailRedirectTo: '/feed.html',
             data: {
               username: form.username,
               email: form.email,
