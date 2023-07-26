@@ -78,7 +78,11 @@
             </div>
         <button style="margin-left: auto; display: block;">Submit</button>
         </form>
-        <hr style="max-width: 350px; margin: 30px auto;">
+        <div style="max-width: 350px; margin: 30px auto 30px auto;">
+        <hr>
+        <!-- <button style="margin-top: 10px; margin-left: auto; color: blue; text-decoration: none; cursor: pointer;" onclick="getMessages(0)">Refresh messages</button> -->
+        </div>
+        <br>
         <div id="feed" class="center">
 
         </div>
@@ -276,6 +280,43 @@
 
     }
 
+    function getMessages(id) {
+
+        const xhr = new XMLHttpRequest();
+
+        // adding timestamp value as query parameter
+        const url = `/.netlify/functions/getMessages/?id=${id}`
+
+        xhr.open("GET", url);
+
+        xhr.onload = function () {
+            console.log(xhr.response);
+
+            if (xhr.status == 200) {
+
+            // If ID is 0, we set feed equal to the response
+            if (id == 0) {
+                document.getElementById('feed').innerHTML = xhr.response;
+            }
+            // Otherwise, we append the response on top of the existing cached feed
+            else {
+                document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML;
+
+            }
+
+            // and we update the message cache in local storage with the updated version of the feed
+            localStorage.setItem('cache', document.getElementById('feed').innerHTML);
+            }
+        };
+        xhr.onerror = function () {
+            // ...handle/report error...
+            console.log('error in loadCacheThenGetMessages');
+            console.log(xhr)
+        };
+
+        xhr.send();
+    }
+
     function loadCacheThenGetMessages() {
 
         // ts = timestamp
@@ -292,33 +333,7 @@
             id = document.getElementsByClassName("post")[0].id;
         }
 
-            const xhr = new XMLHttpRequest();
-
-            // adding timestamp value as query parameter
-            const url = `/.netlify/functions/getMessages/?id=${id}`
-
-            xhr.open("GET", url);
-
-            xhr.onload = function () {
-                console.log(xhr.response);
-
-                if (xhr.status == 200) {
-
-                // appending the messages retrieved from the DB to the top of the feed
-                document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML;
-                // addReply();
-
-                // and updating the message cache with the updated version of the feed
-                localStorage.setItem('cache', document.getElementById('feed').innerHTML);
-                }
-            };
-            xhr.onerror = function () {
-                // ...handle/report error...
-                console.log('error in loadCacheThenGetMessages');
-                console.log(xhr)
-            };
-
-            xhr.send();
+        getMessages(id);
     }
 
     function showParent(event,parentRef) {
