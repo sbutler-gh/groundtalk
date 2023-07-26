@@ -40,41 +40,28 @@ exports.handler = async (event) => {
       body: JSON.stringify(error),
     };
   } else {
-    // let swap = `<p style="color: green"><em>Success!</em>
 
     let username = message[0].by.match(/^([^@]*)@/)[1];
-
-    let swap;
+    let swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">`
+    let childrenEvent = message[0].id
     let reply;
+    let time = new Date(message[0].id).toUTCString()
 
-    if (message[0].ref == "null") {
-
-      swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">
-          <p class="by" user="${message[0].by_id}">${username}
-          <p class="txt">${message[0].txt}
-          <p class="ts">${message[0].id}</p><br>
-          <button class="toggleReply" onclick=toggleReply(event);>Reply</button>
-          <button class="relation children" onclick='showChildren(event,'${message[0].id}')'>Show children</button>
-      </div>
-      `
-    }
-    else {
+    if (message[0]?.ref) {
 
       reply = 1;
 
-      var stringVariable = message[0].ref;
-      let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
-      
-      swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">
-    <button class="relation parent" onclick=showParent(event,'${parent}')>Show thread</button>
-          <p class="by" user="${message[0].by_id}">${username}
-          <p class="txt">${message[0].txt}
-          <p class="ts">${message[0].id}</p><br>
-          <button class="toggleReply" onclick=toggleReply(event);>Reply</button>
-          <button class="relation children" onclick=showChildren(event,'${message[0].ref}')>Show repliess</button>
-      </div>
-      `
+      childrenEvent = message[0]?.ref;
+      let parent = childrenEvent.substring(0, childrenEvent.lastIndexOf('-'));
+
+      swap = swap + `<button class="relation parent" onclick=showParent(event,'${parent}')>Show thread</button> `
     }
+
+    swap = swap + `<span class="messageHead"><a class="by" href="${message[0].by_id}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
+    <p class="txt">${message[0].txt}</p>
+    <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
+    <button class="relation children" onclick=showChildren(event,'${childrenEvent}')>Show replies</button>
+</div>`
 
     return {
       statusCode: 200,

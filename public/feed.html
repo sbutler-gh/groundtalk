@@ -334,10 +334,15 @@
         let parent = document.querySelector(`[ref="${[parentRef]}"], [id="${[parentRef]}"]`);
         console.log(parent);
 
-        p.innerHTML = `<a href="#${parent.id}">${parent.children['2'].innerText}</a>`
+        console.log(parent.children);
+
+        let text = parent.querySelector('.txt').innerText;
+        
+
+        p.innerHTML = `<a href="#${parent.id}">${text}</a>`
 
         event.srcElement.insertAdjacentElement('afterend', p);
-        event.srcElement.innerText = "Hide";
+        event.srcElement.innerText = "Hide thread";
 
         // useful if we want to get a tree of parents
         // nodeList.forEach(div => {
@@ -409,7 +414,7 @@
             console.log(list);
 
             event.srcElement.insertAdjacentElement('afterend', list);
-            event.srcElement.innerText = "Hide";
+            event.srcElement.innerText = "Hide replies";
         }
 
         // If no replies found
@@ -484,7 +489,7 @@ htmx.on("htmx:afterSwap", function(evt) {
         console.log(evt.detail.requestConfig.triggeringEvent.srcElement)
 
         // And if it was a reply, we trigger the children element to show the reply
-        if (evt.detail.requestConfig.triggeringEvent.srcElement.className = "replyForm") {
+        if (evt.detail.requestConfig.parameters.ref) {
 
             console.log('reply')
             
@@ -601,6 +606,46 @@ function crosspost(msg) {
   .user {
     font-weight: bold;
   }
+
+  .messageHead a {
+    text-decoration: none;
+    /* cursor: pointer; */
+    color: #000000a8;
+    /* margin-right: 10px; */
+    font-size: 15px;
+    pointer-events: none;
+  }
+
+  /* .messageHead .by::after {
+    content: '•';
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 10px;
+  } */
+
+  /* .messageHead .by {
+    font-size: 16px;
+  } */
+  .messageHead .ts::after {
+    content: ')';
+  }
+  .messageHead .ts::before {
+    content: '(';
+    margin-left: 5px;
+  }
+
+  button.reply {
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+    color: mediumblue;
+    cursor: pointer;
+  }
+/* 
+  .messageHead a:hover {
+    text-decoration: underline;
+  } */
 
   button.parent {
     /* position: absolute;
