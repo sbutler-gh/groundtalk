@@ -225,7 +225,15 @@ function init() {
 
                 let url = row.c[3]?.v;
                 let title = row.c[1]?.v;
-                let thumbnail = "/thumbnail/" + row.c[9]?.v + ".jpg";
+
+                let thumbnail = "";
+
+                if (row.c[9]?.v.startsWith('http')) {
+                  thumbnail = row.c[9]?.v
+                }
+                else {
+                  thumbnail = "/thumbnail/" + row.c[9]?.v + ".jpg";
+                }
                 let creator = row.c[2]?.v;
                 let format = row.c[4]?.v;
 
