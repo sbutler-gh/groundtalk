@@ -33,48 +33,37 @@ exports.handler = async (event) => {
             };
           } else {
             console.log(message);
-            
-            // for security reasons, we will not show the full email on the client side.
-            // in future, we could perhaps explore a trust approach where if you have a user's keys, you can see their full email
-            let username = message[0].by.match(/^([^@]*)@/)[1];
 
+            let message = ""
 
-            // return {
-            //     statusCode: 200,
-            //     body: JSON.stringify(message)
-            //   };
+            let replyRef = message[0].id
 
-            let swap = `<style>
-            div.post {
-                background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%; margin-bottom: 0.75em;
+            let username = message[0].by?.match(/^([^@]*)@/)[1];
+
+            message = `<div id=${message[0].id} ref=${message[0].ref} class="post">`
+
+            if (message[0]?.ref) {
+              var stringVariable = message[0].ref;
+              let parent = stringVariable.substring(0, stringVariable.lastIndexOf('-'));
+
+              replyRef = message[0].ref
+
+              message = message + `<div class="parentSection"><button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button></div>`
             }
-            p.by {
-                font-weight: 600;
-            }
-            p.ts {
-                font-style: italic;
-                font-size: 12px;
-            }
-            </style>
-            <div id=${message[0].id} class="post">
-            <p class="by" user="${message[0].by_id}">${username}
-            <p class="ts">${message[0].id}
-            <p class="txt">${message[0].txt}
-            </div>`
-        
-            // let swap = "";
-        
-            // for (var i= messages.length - 1; i >= 0; i--) {
-            //     swap = swap + `<div id=${messages[i].id} class="post">
-            //         <p class="by">${messages[i].by}
-            //         <p class="ts">${messages[i].ts}
-            //         <p class="txt">${messages[i].txt}
-            //     </div>`
-            // }
+
+            let time = new Date(message[0].id).toUTCString()
+
+            message = message + `<span class="messageHead"><a class="by" href="${message[0].by_id}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
+            <p class="txt">${message[0].txt}</p>
+            <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
+            <div class="repliesSection">
+            <button class="relation children" onclick=showChildren(event,'${replyRef}')>Show replies</button>
+            </div>
+        </div>`
         
             return {
               statusCode: 200,
-              body: (JSON.stringify(message), swap)
+              body: (JSON.stringify(message), message)
             };
           }
 }

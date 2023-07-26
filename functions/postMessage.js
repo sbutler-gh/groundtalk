@@ -16,6 +16,12 @@ exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
       return { statusCode: 405, body: 'Method Not Allowed' };
     }
+
+    let db = "messages";
+
+    if (event.headers.referer.endsWith('/dev.html')) {
+      db = "messages_dev"
+    }
   
     const form = querystring.parse(event.body);
     console.log(form);
@@ -29,7 +35,7 @@ exports.handler = async (event) => {
     console.log(id);
 
     const { data: message, error } = await supabase
-    .from("messages")
+    .from(db)
     .insert({id: id, txt: form.txt, ref: form?.ref, by: form?.by, by_id: form?.by_id})
     .select()
   

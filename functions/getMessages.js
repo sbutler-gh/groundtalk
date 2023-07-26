@@ -16,6 +16,12 @@ exports.handler = async (event) => {
     console.log(event.queryStringParameters.id);
     let id = event.queryStringParameters.id.substring(0,23);
 
+    let db = "messages";
+
+    if (event.headers.referer.endsWith('/dev.html')) {
+      db = "messages_dev"
+    }
+
       // id = new Date(id).getTime();
 
       console.log(id);
@@ -27,7 +33,7 @@ exports.handler = async (event) => {
 
         // selecting all messages "greater than" the timestamp value, which means everything posted after the current timestamp
         let { data: messages, error } = await supabase
-        .from('messages')
+        .from(db)
         .select('*')
         .gt('id', id);
 
