@@ -22,6 +22,8 @@ exports.handler = async (event) => {
       db = "messages_dev"
     }
 
+    console.log(db);
+
       // id = new Date(id).getTime();
 
       console.log(id);
@@ -34,7 +36,11 @@ exports.handler = async (event) => {
         // selecting all messages "greater than" the timestamp value, which means everything posted after the current timestamp
         let { data: messages, error } = await supabase
         .from(db)
-        .select('*')
+        .select(`*,
+          profiles(
+            username
+          )
+        `)
         .gt('id', id);
 
         if (error) {
@@ -55,7 +61,7 @@ exports.handler = async (event) => {
 
             let replyRef = messages[i].id
 
-            let username = messages[i].by?.match(/^([^@]*)@/)[1];
+            let username = messages[i].profiles.username;
 
             message = `<div id=${messages[i].id} ref=${messages[i].ref} class="post">`
 
@@ -70,7 +76,7 @@ exports.handler = async (event) => {
 
             let time = new Date(messages[i].id).toUTCString()
 
-            message = message + `<span class="messageHead"><a class="by" href="${messages[i].by_id}">${username}</a><a href="#${messages[i].id}" class="ts">${time}</a></span>
+            message = message + `<span class="messageHead"><a class="by" href="${messages[i].by}">${username}</a><a href="#${messages[i].id}" class="ts">${time}</a></span>
             <p class="txt">${messages[i].txt}</p>
             <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
             <div class="repliesSection">

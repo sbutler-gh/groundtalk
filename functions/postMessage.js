@@ -36,7 +36,7 @@ exports.handler = async (event) => {
 
     const { data: message, error } = await supabase
     .from(db)
-    .insert({id: id, txt: form.txt, ref: form?.ref, by: form?.by, by_id: form?.by_id})
+    .insert({id: id, txt: form.txt, ref: form?.ref, by: form?.by})
     .select()
   
   if (error) {
@@ -47,7 +47,7 @@ exports.handler = async (event) => {
     };
   } else {
 
-    let username = message[0].by.match(/^([^@]*)@/)[1];
+    let username = form.username;
     let swap = `<div id=${message[0].id} ref=${message[0].ref} class="post">`
     let replyRef = message[0].id
     let reply;
@@ -63,7 +63,7 @@ exports.handler = async (event) => {
       swap = swap + `<button class="relation parent" onclick=showParent(event,'${parent}')>Show parent</button> `
     }
 
-    swap = swap + `<span class="messageHead"><a class="by" href="${message[0].by_id}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
+    swap = swap + `<span class="messageHead"><a class="by" href="${message[0].by}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
     <p class="txt">${message[0].txt}</p>
     <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
     <button class="relation children" onclick=showChildren(event,'${replyRef}')>Show replies</button>

@@ -104,7 +104,7 @@
       <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
           <textarea name="txt" style="width: 350px; height: 100px"></textarea>
           <input name="by" class="by" id="by_main" style="display: none;">
-          <input name="by_id" class="by_id" id="by_id_main" style="display: none;">
+          <input name="username" class="username" id="username_main" style="display: none;">
           <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
           <div style="display: flex; margin-top: 10px;">
               <div class="checkbox"><input type="checkbox" value="Twitter"><label>Post to Twitter</label></div>
@@ -126,10 +126,24 @@
 <script>
 
   function loadUserDetails() {
-      if (localStorage.getItem('email') && localStorage.getItem('email') != "undefined") {
-          document.getElementById('signInForm').innerHTML = `<p class="user">${localStorage.getItem('email')}</p>`
-          document.getElementById('by_main').setAttribute('value', localStorage.getItem('email'));
-          document.getElementById('by_id_main').setAttribute('value', localStorage.getItem('id'));
+      if (localStorage.getItem('username') && localStorage.getItem('username') != "undefined") {
+
+          let profileDiv = document.createElement('div');
+          profileDiv.id = "profileDiv"
+          profileDiv.style = "text-align: right"
+          profileDiv.innerHTML = `<p id="profileUsername" class="user">${localStorage.getItem('username')}</p>
+          <button onclick="toggleChangeUsername(event)" style="margin-left: auto">Change username</button>
+          `
+
+          if (document.getElementById('signInForm')) {
+            document.getElementById('signInForm').replaceWith(profileDiv)
+          }
+          else {
+            document.getElementById('profileDiv').replaceWith(profileDiv)
+          }
+
+          document.getElementById('username_main').setAttribute('value', localStorage.getItem('username'));
+          document.getElementById('by_main').setAttribute('value', localStorage.getItem('id'));
       }
 
       else {
@@ -161,14 +175,15 @@
           if (xhr.status == 200) {
 
               let response = JSON.parse(xhr.response);
+              console.log(response);
 
-              localStorage.setItem('id', response.id);
-              localStorage.setItem('email', response.email);
-              localStorage.setItem('username', response.username)
+              localStorage.setItem('id', response.user.id);
+              localStorage.setItem('email', response.user.email);
+              localStorage.setItem('username', response.user?.user_metadata?.username)
               localStorage.setItem('access_token', response.access_token);
+              localStorage.setItem('session', response);
 
-              document.getElementById('signInForm').innerHTML = `<p class="user">${localStorage.getItem('email')}</p>`
-
+              loadUserDetails()
           }
       };
       xhr.onerror = function () {
@@ -179,6 +194,71 @@
 
       }
 
+  }
+
+  function toggleChangeUsername(event) {
+
+    if (event.srcElement.innerText == "Change username") {
+
+      let usernameInput = document.createElement('input');
+      usernameInput.id = "usernameInput"
+      usernameInput.value = document.getElementById('profileUsername').innerText;
+      usernameInput.style = "margin-bottom: 5px;"
+      document.getElementById('profileUsername').replaceWith(usernameInput);
+
+      event.srcElement.innerText = "Submit new username";
+
+      let cancel = document.createElement('button');
+      cancel.innerText = "Cancel"
+      cancel.style = "margin-left: auto;"
+      cancel.setAttribute('onclick', 'toggleChangeUsername(event)');
+
+      event.srcElement.insertAdjacentElement('afterend', cancel)
+
+    }
+    else if (event.srcElement.innerText == "Cancel") {
+      document.getElementById('profileDiv').innerHTML = `<p id="profileUsername" class="user">${localStorage.getItem('username')}</p>
+          <button onclick="toggleChangeUsername(event)" style="margin-left: auto">Change username</button>
+          `
+    }
+    else if (event.srcElement.innerText == "Submit new username") {
+      updateUsername(document.getElementById('usernameInput').value)
+    }
+
+  }
+
+  function updateUsername(newUsername) {
+    console.log(newUsername)
+
+    const xhr = new XMLHttpRequest();
+
+    // adding newUsername and id values as query parameter
+    const url = `/.netlify/functions/updateUsername/?username=${newUsername}&id=${localStorage.getItem('id')}&email=${localStorage.getItem('email')}`
+
+    xhr.open("POST", url);
+    xhr.setRequestHeader('Authorization', 'apikey ' + localStorage.getItem('access_token'));
+
+        xhr.onload = function () {
+            console.log(xhr.response);
+
+            if (xhr.status == 200) {
+
+              localStorage.setItem('username', newUsername);
+              loadUserDetails()
+
+            // localStorage.setItem('username');
+            // loadUserDetails();
+
+
+            }
+        };
+        xhr.onerror = function () {
+            // ...handle/report error...
+            console.log('error in updatingUsername');
+            console.log(xhr)
+        };
+
+        xhr.send();
   }
 
   function toggleReply(event) {
@@ -268,8 +348,8 @@
 
       reply.innerHTML = `<textarea name="txt"></textarea><br>
           <input value=${ref} name="ref" style="display: none">
-          <input id="by_reply" class="by" name="by" value="${localStorage?.getItem('email')}" style="display: none">
-          <input id="by_id_reply" name="by_id" class="by" value="${localStorage?.getItem('id')}" style="display: none;">
+          <input id="reply_username" class="username" name="username" value="${localStorage?.getItem('username')}" style="display: none">
+          <input id="by_reply" name="by" class="by" value="${localStorage?.getItem('id')}" style="display: none;">
           <button class="replyToggle" type="submit" onclick="toggleReply(event)">Submit reply</button>
           <br>`;
 
@@ -569,7 +649,7 @@ htmx.on("htmx:afterSwap", function(evt) {
 
           // console.log(parentDiv)
 
-          let showChildrenButton = form.parentElement.lastElementChild;
+          let showChildrenButton = form.parentElement.lastElementChild.querySelector('.children');
 
           console.log(showChildrenButton)
 

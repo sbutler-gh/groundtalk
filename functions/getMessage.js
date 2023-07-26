@@ -22,8 +22,12 @@ exports.handler = async (event) => {
     console.log(id);
 
         let { data: message, error } = await supabase
-        .from('messages')
-        .select('*')
+        .from(db)
+        .select(`*,
+          profiles(
+            username
+          )
+        `)
         .eq('id', id);
 
         if (error) {
@@ -38,7 +42,7 @@ exports.handler = async (event) => {
 
             let replyRef = message[0].id
 
-            let username = message[0].by?.match(/^([^@]*)@/)[1];
+            let username = message[0].profiles.username;
 
             message = `<div id=${message[0].id} ref=${message[0].ref} class="post">`
 
@@ -53,7 +57,7 @@ exports.handler = async (event) => {
 
             let time = new Date(message[0].id).toUTCString()
 
-            message = message + `<span class="messageHead"><a class="by" href="${message[0].by_id}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
+            message = message + `<span class="messageHead"><a class="by" href="${message[0].by}">${username}</a><a href="#${message[0].id}" class="ts">${time}</a></span>
             <p class="txt">${message[0].txt}</p>
             <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
             <div class="repliesSection">

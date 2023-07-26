@@ -40,13 +40,13 @@ exports.handler = async (event) => {
             access_token: session.access_token,
             id: user.id,
             email: user.email,
-            username: user.email.substring(0, user.email.indexOf("@"))
+            username: user.user_metadata.username
          }
          console.log(result);
 
         return {
             statusCode: 200,
-            body: JSON.stringify(result)
+            body: (JSON.stringify(session))
           };
       }
     }
