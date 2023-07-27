@@ -769,15 +769,14 @@ button {
 
 p.txt {
   white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 
-.messageHead a {
+.messageHead > a {
   /* cursor: pointer; */
   color: #000000a8;
   /* margin-right: 10px; */
   font-size: 15px;
-  text-decoration: none;
-  pointer-events: none;
 }
 
 .messageHead a.by {
@@ -788,11 +787,21 @@ p.txt {
 
 .messageHead a.ts {
   font-size: 13px;
+  text-decoration: none;
+}
+
+.messageHead a.ts:hover {
+  text-decoration: underline;
 }
 
 .relation.ts {
   pointer-events: all;
   text-decoration: underline;
+}
+
+.messageHead a.ts:hover::after {
+  content: '(copy to share)';
+  margin-left: 5px;
 }
 
 /* .messageHead .by::after {
