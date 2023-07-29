@@ -66,6 +66,7 @@
 </head>
 
 <body onload="loadUserDetails()" style="max-width: 100%; width: 800px; margin: auto;">
+<div class="devBanner"><p>This is a development page, for experimenting and testing purposes.  To use the live site, go <a href="/">here</a>.</p></div>
 <div onclick="location.href='/'" style="position: relative; max-width: 640px; margin: auto; text-align: center; cursor: pointer;" >
   <img src="./header.svg" style="width: 640px; max-width: 100%";>
       <div class="header" style="position: absolute; top: 50%;
@@ -857,6 +858,27 @@ button.parent {
 
 .parentDiv{
   margin: 10px 0px;
+}
+
+.devBanner {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  background: dodgerblue;
+  color: white;
+  z-index: 100;
+}
+
+.devBanner p {
+  /* width: 600px;
+  max-width: 100%; */
+  margin: 20px auto;
+}
+
+.devBanner a {
+  color: white;
 }
 </style>
 </html>
