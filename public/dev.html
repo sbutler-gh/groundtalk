@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <script>
+
+  // extension for crossposting on other sites
+
+  // email notifications on posts (can create forums and threads)? ... control email notifications
+
+  // coop meetings guide
+
+  // post to threads
+
+  // updated about Reddit and COOP meeting time
+
   // ACCESSIBILITY – post on mastodon about that?  find the guy posting about that?  make it easy to customize settings, have that stored in local cache?
 
   // share or link button to post when viewing, could just be the time stamp, or a share button next to it (link copied)
@@ -10,7 +21,6 @@
   // extension for crossposting on other sites
 
   // make post describing infrastructure and schema.  post in vlcn, libqsl, htmx (tag people), reply on the kolektiva mastodon post that I posted before
-
 
   // add link to groundtalk posts at end of posts?
   
@@ -121,10 +131,10 @@
           <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
           <p style="margin-top: 5px"><em>Crosspost to:</em></p>
           <div style="display: flex; margin-top: 10px; margin-bottom: 10px;">
-              <div class="checkbox"><input type="checkbox" value="Twitter"><label>Twitter</label></div>
-              <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Mastodon</label><br>
+              <div class="checkbox"><input type="checkbox" value="twitter"><label>Twitter</label></div>
+              <div class="checkbox"><input type="checkbox" onclick="focusInput(event)" value="mastodon" style="margin-left: 20px;"><label>Mastodon</label><br>
                 <input class="checkboxInput" id="mastodonValue" placeholder="kolektiva.social"></div>
-              <div class="checkbox"><input type="checkbox" value="Reddit" style="margin-left: 20px;"><label>r/<input class="checkboxInput" id="subredditValue" placeholder="AskReddit"></label></div>
+              <div class="checkbox"><input type="checkbox" onclick="focusInput(event)" value="reddit" style="margin-left: 20px;"><label>r/<input class="checkboxInput" id="redditValue" placeholder="AskReddit"></label></div>
           </div>
       <button style="margin-left: auto; display: block;">Submit</button>
       </form>
@@ -702,7 +712,7 @@ htmx.on("htmx:afterSwap", function(evt) {
   }
 
 
-  if (document.querySelector('input[value="Twitter"]').checked || document.querySelector('input[value="Mastodon"]').checked || document.querySelector('input[value="Reddit"]').checked) {
+  if (document.querySelector('input[value="twitter"]').checked || document.querySelector('input[value="mastodon"]').checked || document.querySelector('input[value="reddit"]').checked) {
 
       console.log('crosspost!')
 
@@ -733,27 +743,32 @@ htmx.on("htmx:afterSwap", function(evt) {
 
 function crosspost(msg) {
   
-  if (document.querySelector('input[value="Twitter"]').checked) {
+  if (document.querySelector('input[value="twitter"]').checked) {
       var twitter = window.open(`https://twitter.com/intent/tweet?text=${msg}`, 'twitter','width=500,height=500');
 
   }
   
-  if (document.querySelector('input[value="Mastodon"]').checked) {
+  if (document.querySelector('input[value="mastodon"]').checked) {
       
       let instance_url = document.getElementById('mastodonValue').value;
       var mastodon = window.open(`https://${instance_url}/share?text=${msg}`, 'mastodon','width=500,height=500');
 
   }
 
-  if (document.querySelector('input[value="Reddit"]').checked) {
+  if (document.querySelector('input[value="reddit"]').checked) {
 
       let body = encodeURIComponent(msg);
       
-      let subreddit = document.getElementById('subredditValue').value;
-      console.log(document.getElementById('subredditValue').value);
+      let subreddit = document.getElementById('redditValue').value;
+      console.log(document.getElementById('redditValue').value);
       var reddit = window.open(`https://www.reddit.com/r/${subreddit}/submit?title=Post%title&text=${msg}`, 'reddit','width=500,height=500');
 
   }
+}
+
+function focusInput(event) {
+  console.log(event.target.value);
+  document.getElementById(`${event.target.value}Value`).focus();
 }
 </script>
 
