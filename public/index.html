@@ -111,16 +111,19 @@
 
 <div style="margin: auto">
           <!-- <label>Posting as ...</label><input name="author">
-          <p class="center"><em>Enter new post</em></p>
               <br><br> -->
+
       <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
-          <textarea name="txt" style="width: 350px; height: 100px"></textarea>
+        <p class=""><em>Enter new post</em></p>  
+        <textarea id="parentTextArea" name="txt" style="width: 350px; height: 100px"></textarea>
           <input name="by" class="by" id="by_main" style="display: none;">
           <input name="username" class="username" id="username_main" style="display: none;">
           <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
-          <div style="display: flex; margin-top: 10px;">
-              <div class="checkbox"><input type="checkbox" value="Twitter"><label>Post to Twitter</label></div>
-              <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Post to Mastodon</label></div>
+          <p style="margin-top: 5px"><em>Crosspost to:</em></p>
+          <div style="display: flex; margin-top: 10px; margin-bottom: 10px;">
+              <div class="checkbox"><input type="checkbox" value="Twitter"><label>Twitter</label></div>
+              <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Mastodon</label></div>
+              <div class="checkbox"><input type="checkbox" value="Reddit" style="margin-left: 20px;"><label>r/<input class="checkboxInput" id="subredditValue"></label></div>
           </div>
       <button style="margin-left: auto; display: block;">Submit</button>
       </form>
@@ -136,6 +139,22 @@
 
 </body>
 <script>
+
+  let cache = "cache";
+
+  // if this is the dev page, then we want to set appropriate settings
+  if (window.location.pathname.includes('dev')) {
+    cache = "cache_dev";
+
+    let devBanner = document.createElement('div');
+    devBanner.classList.add('devBanner');
+    devBanner.innerHTML = `<p>This is a development page, for experimenting and testing purposes.  To use the live site, go <a href="/">here</a>.</p>`
+
+    document.body.insertBefore(devBanner, document.body.firstChild);
+
+  }
+
+  console.log(cache);
 
   function loadUserDetails() {
       if (localStorage.getItem('username') && localStorage.getItem('username') != "undefined") {
@@ -431,7 +450,7 @@
           }
 
           // and we update the message cache in local storage with the updated version of the feed
-          localStorage.setItem('cache', document.getElementById('feed').innerHTML);
+          localStorage.setItem(cache, document.getElementById('feed').innerHTML);
           }
       };
       xhr.onerror = function () {
@@ -450,10 +469,13 @@
       // because some messages may already be cached locally, as a way of lowering the amount of requests and repeated data transfers
       let id = 0;
 
-      if (localStorage?.cache) {
+      if (localStorage[cache]) {
+
+          console.log('cache length');
+          console.log(localStorage[cache].length)
 
           // setting the feed to all of the messages in the cache
-          document.getElementById('feed').innerHTML = localStorage?.cache;
+          document.getElementById('feed').innerHTML = localStorage[cache];
 
           // Set the timestamp value equal to the timestamp value of the latest message in the cache.
           id = document.getElementsByClassName("post")[0].id;
@@ -642,9 +664,13 @@ htmx.on("htmx:afterSwap", function(evt) {
   // If the swap was a new message
   if (evt.detail.pathInfo.requestPath == "/.netlify/functions/postMessage") {
       // we update the message cache with the updated version of the feed
-      localStorage.setItem('cache', document.getElementById('feed').innerHTML);
+      localStorage.setItem(cache, document.getElementById('feed').innerHTML);
 
-      console.log(evt.detail.requestConfig.triggeringEvent.srcElement)
+      console.log(evt.detail.requestConfig.triggeringEvent.srcElement);
+
+
+      // if evt.detail.errors.length < 0
+      // document.getElementById('parentTextArea').value = "";
 
       // And if it was a reply, we trigger the children element to show the reply
       if (evt.detail.requestConfig.parameters.ref) {
@@ -675,7 +701,7 @@ htmx.on("htmx:afterSwap", function(evt) {
   }
 
 
-  if (document.querySelector('input[value="Twitter"]').checked || document.querySelector('input[value="Mastodon"]').checked) {
+  if (document.querySelector('input[value="Twitter"]').checked || document.querySelector('input[value="Mastodon"]').checked || document.querySelector('input[value="Reddit"]').checked) {
 
       console.log('crosspost!')
 
@@ -715,6 +741,16 @@ function crosspost(msg) {
       
       let instance_url = "https://kolektiva.social"
       var mastodon = window.open(`https://kolektiva.social/share?text=${msg}`, 'mastodon','width=500,height=500');
+
+  }
+
+  if (document.querySelector('input[value="Reddit"]').checked) {
+
+      let body = encodeURIComponent(msg);
+      
+      let subreddit = document.getElementById('subredditValue').value;
+      console.log(document.getElementById('subredditValue').value);
+      var reddit = window.open(`https://www.reddit.com/r/${subreddit}/submit?title=Post%title&text=${msg}`, 'reddit','width=500,height=500');
 
   }
 }
@@ -877,6 +913,35 @@ button.parent {
 
 .parentDiv{
   margin: 10px 0px;
+}
+
+.checkboxInput {
+  max-width: 75px;
+    margin-left: 2px;
+    border: none;
+    border-bottom: solid 1px black;
+    padding: 0px;
+}
+
+.devBanner {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  background: dodgerblue;
+  color: white;
+  z-index: 100;
+}
+
+.devBanner p {
+  /* width: 600px;
+  max-width: 100%; */
+  margin: 20px auto;
+}
+
+.devBanner a {
+  color: white;
 }
 </style>
 </html>

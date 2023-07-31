@@ -20,6 +20,7 @@ exports.handler = async (event) => {
 
     if (event.headers.referer.endsWith('/dev.html')) {
       db = "messages_dev"
+      console.log('dev pull')
     }
 
     console.log(db);
