@@ -122,8 +122,9 @@
           <p style="margin-top: 5px"><em>Crosspost to:</em></p>
           <div style="display: flex; margin-top: 10px; margin-bottom: 10px;">
               <div class="checkbox"><input type="checkbox" value="Twitter"><label>Twitter</label></div>
-              <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Mastodon</label></div>
-              <div class="checkbox"><input type="checkbox" value="Reddit" style="margin-left: 20px;"><label>r/<input class="checkboxInput" id="subredditValue"></label></div>
+              <div class="checkbox"><input type="checkbox" value="Mastodon" style="margin-left: 20px;"><label>Mastodon</label><br>
+                <input class="checkboxInput" id="mastodonValue" placeholder="kolektiva.social"></div>
+              <div class="checkbox"><input type="checkbox" value="Reddit" style="margin-left: 20px;"><label>r/<input class="checkboxInput" id="subredditValue" placeholder="AskReddit"></label></div>
           </div>
       <button style="margin-left: auto; display: block;">Submit</button>
       </form>
@@ -739,8 +740,8 @@ function crosspost(msg) {
   
   if (document.querySelector('input[value="Mastodon"]').checked) {
       
-      let instance_url = "https://kolektiva.social"
-      var mastodon = window.open(`https://kolektiva.social/share?text=${msg}`, 'mastodon','width=500,height=500');
+      let instance_url = document.getElementById('mastodonValue').value;
+      var mastodon = window.open(`https://${instance_url}/share?text=${msg}`, 'mastodon','width=500,height=500');
 
   }
 
@@ -942,6 +943,13 @@ button.parent {
 
 .devBanner a {
   color: white;
+}
+
+#mastodonValue {
+  margin-left: auto;
+    display: block;
+    width: 100px;
+    padding: 3px;
 }
 </style>
 </html>
