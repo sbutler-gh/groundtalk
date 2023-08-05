@@ -304,13 +304,15 @@
           `
     }
     else if (event.srcElement.innerText == "Submit new username") {
-      updateUsername(document.getElementById('usernameInput').value)
+      updateUsername(document.getElementById('usernameInput').value, event.srcElement)
     }
 
   }
 
-  function updateUsername(newUsername) {
+  function updateUsername(newUsername, button) {
     console.log(newUsername)
+
+    button.setAttribute('disabled', 'true');
 
     const xhr = new XMLHttpRequest();
 
@@ -354,6 +356,8 @@
                 response.innerText = JSON.parse(xhr.response)?.details + "  Try again.";
               }
             }
+
+            button.removeAttribute('disabled');
 
             target.insertAdjacentElement('afterend', response);
 
