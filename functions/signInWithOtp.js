@@ -27,6 +27,8 @@ exports.handler = async (event) => {
     const form = querystring.parse(event.body);
     console.log(form.email);
     form.username = form.email.substring(0, form.email.indexOf("@"));
+    let random = (+new Date * Math.random()).toString(36).substring(0,4);
+    form.username = form.username + random;
     console.log(form.username);
 
     console.log(event.headers.referer);

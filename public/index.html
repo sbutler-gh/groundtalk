@@ -2,6 +2,23 @@
 <html lang="en">
 <script>
 
+  // forum / thread is different from microblogging.  can start talking about it more consistently.  send email, goes to group in bcc.  send reply, goes to group in bcc.
+
+  // join the cooperative.  what do people need to see?
+
+    // more robust username flow (add random number to username)
+    // more robust update username
+    // progressive web app
+
+
+    // make an introduction at Groundtalk.
+    // RT this post.
+    // download an archive of your Twitter data (settings > sdfsd > sdfsdfs), just in case.
+
+
+  // follow messages.  many-to-many, people following a given message.  (emails happen on server anyway, use supabase request and then send email with postmark.)  subscribe to specific messages.
+  // introductions post, set subscribers to all?  unsubscribe in the webapp.
+
   // extension for crossposting on other sites
 
   // email notifications on posts (can create forums and threads)? ... control email notifications
@@ -22,7 +39,11 @@
 
   // post to threads
 
+    // inbound route, reply to message
+
   // updated about Reddit and COOP meeting time
+
+  // designate if post is markdown, or link, so knows how to render it.  that stored in html.
 
   // ACCESSIBILITY – post on mastodon about that?  find the guy posting about that?  make it easy to customize settings, have that stored in local cache?
 
@@ -302,6 +323,10 @@
         xhr.onload = function () {
             console.log(xhr.response);
 
+            let response = document.createElement('p');
+            response.style = "font-style: italic; display: block; margin: 10px 0px;";
+            let target = "";
+
             if (xhr.status == 200) {
 
               localStorage.setItem('username', newUsername);
@@ -310,8 +335,31 @@
             // localStorage.setItem('username');
             // loadUserDetails();
 
+            response.innerText = "Success!"
+            response.style.color = "green";
+            response.style.marginLeft = "auto";
+            response.style.textAlign = "right";
+            target = document.getElementById('profileDiv');
+
 
             }
+            else {
+              response.style.color = "darkred";
+              target = document.getElementById('usernameInput');
+
+              if (JSON.parse(xhr.response)?.code == "23505") {
+                response.innerText = "Username already taken.  Try another.";
+              }
+              else {
+                response.innerText = JSON.parse(xhr.response)?.details + "  Try again.";
+              }
+            }
+
+            target.insertAdjacentElement('afterend', response);
+
+            setTimeout(function() {
+              response.remove();
+            }, 3000)
         };
         xhr.onerror = function () {
             // ...handle/report error...
@@ -698,6 +746,7 @@ htmx.on("htmx:afterSwap", function(evt) {
 
       console.log(evt.detail.requestConfig.triggeringEvent.srcElement);
 
+      // console.log(evt.target.children[0][0])
 
       // if evt.detail.errors.length < 0
       // document.getElementById('parentTextArea').value = "";
@@ -727,6 +776,12 @@ htmx.on("htmx:afterSwap", function(evt) {
           form.remove();
       }
 
+      // finally, we send an email notification of the post to those tagged.
+      
+
+      console.log(document.getElementById('feed').children[0].innerHTML)
+      // sendEmails(document.getElementById('feed').children[0].innerHTML)
+
       
   }
 
@@ -739,6 +794,33 @@ htmx.on("htmx:afterSwap", function(evt) {
 
   }
 });
+
+function sendEmails(html) {
+
+  console.log(html);
+
+  const xhr = new XMLHttpRequest();
+
+    // adding timestamp value as query parameter
+    const url = `/.netlify/functions/sendEmails/?html=${html}`
+
+    xhr.open("POST", url);
+
+    xhr.onload = function () {
+
+      if (xhr.status == 200) {
+
+          let response = JSON.parse(xhr.response);
+          console.log(response);
+      }
+    };
+    xhr.onerror = function () {
+      // ...handle/report error...
+    };
+
+    xhr.send();
+
+}
 
 //  this function below is a work-in-progress, for local automated cross-posting
 
