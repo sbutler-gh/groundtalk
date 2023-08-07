@@ -2,6 +2,12 @@
 <html lang="en">
 <script>
 
+  // people can respond and give introductions directly from email
+
+  // people can use cross-posting without being logged in
+
+  // security audit for sign in flow etc.
+
   // forum / thread is different from microblogging.  can start talking about it more consistently.  send email, goes to group in bcc.  send reply, goes to group in bcc.
 
   // join the cooperative.  what do people need to see?
@@ -163,7 +169,7 @@
           <!-- <label>Posting as ...</label><input name="author">
               <br><br> -->
 
-      <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:afterSwap call logData(event, swap)">
+      <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:configRequest call logData(event)">
         <p class=""><em>Enter new post</em></p>  
         <textarea id="parentTextArea" name="txt" style="width: 350px; height: 100px"></textarea>
           <input name="by" class="by" id="by_main" style="display: none;">
@@ -226,6 +232,10 @@
 
           document.getElementById('username_main').setAttribute('value', localStorage.getItem('username'));
           document.getElementById('by_main').setAttribute('value', localStorage.getItem('id'));
+
+          // document.body.addEventListener('htmx:configRequest', function(evt) {
+          //     evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the mix
+          // });
       }
 
       else {
@@ -381,6 +391,9 @@
       // If the button currently says "Reply" and is clicked, we will handle that accordingly.
       // Otherwise, if the button currently says "Cancel reply", we'll go down to the else statement below and handle accordingly.
       if (event.srcElement.innerText == "Reply") {
+
+      // We can comment out all this data on creating the ref locally, since we are now doing it on the server side.  Good to keep this in mind for future local-first applications though (e.g. if you want to respond, maybe creating a temp local ref when you post the messages, and then updating on server side?)
+      // In the meantime, by moving this to the server side, it should lighten up the client.
 
       // We are preparing a comment reply form, which will include pre-populating the "ref" value for the reply.
       let ref;
@@ -705,12 +718,9 @@
 
   loadCacheThenGetMessages();
 
-  function logData(event, swap) {
-      console.log('logdata');
-          console.log(swap);
+  function logData(event) {
+    console.log('logging data');
           console.log(event);
-          const xhr = event.detail.xhr;
-          console.log(xhr);
   }   
 
   function sortList(ul){
@@ -927,6 +937,8 @@ button {
 p.txt {
   white-space: pre-line;
   overflow-wrap: anywhere;
+  height: 300px;
+  overflow: scroll;
 }
 
 .messageHead > a {
