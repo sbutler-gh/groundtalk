@@ -53,7 +53,8 @@ exports.handler = async (event) => {
               email: form.email,
               location: form.location,
               project: form.project,
-              notes: form?.notes
+              notes: form?.notes,
+              name: form?.name,
             }
           }
       })
@@ -69,7 +70,7 @@ exports.handler = async (event) => {
     let copy_text = "";
     let swap = "";
 
-    if (form.project == "groundtalk") {
+    if (form?.project == "groundtalk") {
 
     copy_text = `We need low and resilient infrastructures.  We need our own social media and networks, if we want them.
 
@@ -102,12 +103,25 @@ exports.handler = async (event) => {
 <br>
 `}
 
-else if (form.project == "library") {
+else if (form?.project == "library") {
   swap = `
   <h2 style="color: #d5ffd5">Success!</h2>
   <p>You can start proposing content for the library and adding resources <a href="https://docs.google.com/spreadsheets/d/1oaA7dLz8Scv3mH42Jq_jjfDLvKk4D3umrCArQomqMCE/edit?usp=sharing" style="font-weight: bold; color: #d5ffd5;">on this sheet</a>.
   <p>If you want to get personally involved, you can write to <strong style="color: #b5deff">library@groundtalk.land</strong></p>
 `
+}
+
+else if (form?.project == "cooperative") {
+  swap = `
+  <div class="swap">
+  <h2 style="color: green; text-align: center;">Success!</h2>
+  <p style="text-align: center"><em><strong>${data.user.email}</strong></em></p>
+  <p style="text-align: center"><em>joined at ${data.user.email_confirmed_at}</em></p>
+  <p style="margin-top: 30px">Keep an eye out for communication soon as we build an initial base, and start sharing this with others.  If you want to get in touch in the meantime, you can write to <strong>coop@peoplestools.com</strong></p>
+  <p>You can also start exploring the alternatives below, and learning how to use them in your life, organization, and communities.  The tools are curated <a href="https://docs.getgrist.com/iHLyPNfU5aPQ/Tools/p/">here</a>, where you can add new items as well!</p>
+  <p style="font-weight: bold; text-align: center; margin: 30px auto;">Get ready to make change together.</p>
+  </div>
+  `
 }
     return {
       statusCode: 200,
