@@ -117,7 +117,7 @@ else if (form?.project == "cooperative") {
   <h2 style="color: green; text-align: center;">Success!</h2>
   <p style="text-align: center"><em><strong>${data.user.email}</strong></em></p>
   <p style="text-align: center"><em>joined at ${data.user.email_confirmed_at}</em></p>
-  <p style="margin-top: 30px">Keep an eye out for communication soon as we build an initial base, and start sharing this with others.  If you want to get in touch in the meantime, you can write to <strong>coop@peoplestools.com</strong></p>
+  <p style="margin-top: 30px">Keep an eye out for communication soon as we build an initial base, and start sharing this with others.  If you want to get in touch in the meantime, you can write to <strong>coop@groundtalk.land</strong></p>
   <p>You can also start exploring the alternatives below, and learning how to use them in your life, organization, and communities.  The tools are curated <a href="https://docs.getgrist.com/iHLyPNfU5aPQ/Tools/p/">here</a>, where you can add new items as well!</p>
   <p style="font-weight: bold; text-align: center; margin: 30px auto;">Get ready to make change together.</p>
   </div>
