@@ -1,0 +1,138 @@
+    <body>
+    <form class="" style="margin: auto; width: fit-content" hx-post="/.netlify/functions/signUp" hx-trigger="submit" _="">
+
+        <fieldset class="visually-hidden" aria-hidden="true">
+        <label for="last-name-subscribe-field">Last Name:</label>
+        <input type="text" id="last-name-subscribe-field" name="last_name" autocomplete="off" tabindex="-1" />
+        <input type="text" name="project" value="alternatives" autocomplete="off" tabindex="-1">
+        </fieldset>
+
+        <div>
+            <label for="email"><strong>Email*</strong></label>
+            <input type="email" id="email" name="email" style="width: 250px; max-width: 100%;" required>
+        </div>
+    <button type="submit">Submit</button>
+    </form>
+    <div id="feed">
+        <div id="1">
+            <h4><a href="https://meet.jit.si/">Jitsi</a></h4>
+            <p>An open-source video conferencing tool.</p>
+            </div><div id="2">
+            <h4><a href="https://getgrist.com">Grist</a></h4>
+            <p>A hybrid spreadsheet-database platform</p>
+            </div>
+    </div>
+    </body>
+  <style>
+    body {
+        max-width: 100%;
+        margin: auto;
+    }
+    .visually-hidden {
+        position: absolute;
+        left: -9999px;
+    }
+    label {
+        display: block;
+    }
+
+    #feed > div {
+        width: 300px;
+    margin: 20px 10px;
+    padding: 1em;
+    border: solid 1px black;
+    border-radius: 10px;
+    background: #f5fdff;
+    word-wrap: break-word;
+    }
+
+    #feed > div > .name {
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    #feed {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    }
+
+    .tags {
+        text-align: center;
+    }
+
+    .tags span {
+        /* border-radius: 10px;
+        padding: 3px;
+        background: white;
+        cursor: pointer;
+        background: white;
+        cursor: pointer;
+        margin: 5px 2px;
+        white-space: pre; */
+        cursor: pointer;
+        font-style: italic;
+    }
+
+    .tags span:not(:last-of-type)::after {
+        content: ", ";
+        margin-right: 1px;
+    }
+  </style>
+  <script>
+
+    // groundtalk
+    // streamcoop
+
+    async function getTable() {
+//   const response = await fetch('https://docs.getgrist.com/api/docs/iHLyPNfU5aPQwgwUNQqVKn/tables', { 
+//     method: 'GET', 
+//     headers: new Headers({
+//         'Authorization': 'Bearer d309e3c6db65f8af45e7836edf7f0f2980088ca1',
+//         'Content-Type': 'application/x-www-form-urlencoded',
+//         'mode': 'no-cors',
+//         "X-Requested-With": "XMLHttpRequest", 
+//         "Access-Control-Allow-Origin": "*"
+//     })
+// });
+//   const table = await response.json();
+//   console.log(table);
+
+const xhr = new XMLHttpRequest();
+
+// adding newUsername and id values as query parameter
+const url = `/.netlify/functions/getTools`
+
+xhr.open("GET", url);
+
+// xhr.setRequestHeader('Authorization', 'Bearer ' + 'd309e3c6db65f8af45e7836edf7f0f2980088ca1');
+
+    xhr.onload = function () {
+        console.log(xhr.response);
+        document.getElementById('feed').innerHTML = xhr.response;
+        // xhr.response.setHeader("Access-Control-Allow-Origin", "*");
+        // xhr.response.setHeader("Access-Control-Allow-Credentials", "true");
+        // xhr.response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        // xhr.response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+
+
+
+        if (xhr.status == 200) {
+
+
+        }
+        else {
+
+        }
+    };
+    xhr.onerror = function () {
+        // ...handle/report error...
+        console.log('error in loading tables');
+        console.log(xhr)
+    };
+
+    xhr.send();
+}
+
+getTable();
+  </script>
