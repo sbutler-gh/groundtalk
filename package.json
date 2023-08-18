@@ -2,6 +2,8 @@
     "dependencies": {
         "@supabase/supabase-js": "^2.13.1",
         "dotenv": "^16.0.3",
+        "mailersend": "^2.2.0",
+        "postmark": "^3.0.19",
         "requirejs": "^2.3.6"
     }
 }

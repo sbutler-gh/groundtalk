@@ -89,6 +89,8 @@ exports.handler = async (event) => {
 
           }
 
+          console.log(swap);
+
             return {
               statusCode: 200,
               body: (JSON.stringify(messages), swap)

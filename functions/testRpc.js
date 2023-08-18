@@ -5,7 +5,7 @@ const querystring = require('querystring');
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_API_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // get current latest index
@@ -19,13 +19,13 @@ exports.handler = async (event) => {
 
     let to_email_decode = "";
 
-    let email = "sam@gt.sambutler.us"
+    let email = "samabc@gt.sambutler.us"
     let message_id = new Date().toISOString();
     // let ref_value = "null";
     // let txt_value = "null";
 
     let ref_value = "2023-08-04T09:00:32.822+00:00-2-2"
-    let txt_value = "0-2-2-7";
+    let txt_value = "0-2-2-10";
 
     let { data, error } = await supabase
   .rpc('insert_dev_message_username_fn', {
@@ -34,6 +34,11 @@ exports.handler = async (event) => {
     ref_value, 
     txt_value
   })
+
+  // let { data, error } = await supabase
+  // .rpc('get_uuid_from_email_or_create_user', {
+  //   email
+  // })
 
   if (error) console.error(error)
 else console.log(data)
