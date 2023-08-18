@@ -154,6 +154,10 @@
   <br>
   <label style="margin-top: 10px; display: block;">Password</label>
   <input name="password"><br> -->
+  <div>
+    <input type="checkbox" required><label class="checkbox">I accept the <a href="/policies/use" target="_blank">terms of use</a></label><br>
+    <input type="checkbox" required><label class="checkbox">I accept the <a href="/policies/privacy" target="_blank">privacy policy</a></label>
+</div>
   <button type="submit" style="display: block; margin: 10px 0 10px auto">Send Magic Link</button>
   <span id="signInUpdate"></span>
   </form>
@@ -187,7 +191,10 @@
 
       </div>
 </div>
-
+<div style="margin: auto; display: flex; max-width: 200px;">
+  <a href="/policies/use" target="_blank" style="margin-right: 20px;">Terms of use</a>
+  <a href="/policies/privacy" target="_blank">Privacy policy</a>
+</div>
 </body>
 <script>
 

@@ -1,96 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<script>
-
-  // people can respond and give introductions directly from email
-
-  // people can use cross-posting without being logged in
-
-  // security audit for sign in flow etc.
-
-  // forum / thread is different from microblogging.  can start talking about it more consistently.  send email, goes to group in bcc.  send reply, goes to group in bcc.
-
-  // join the cooperative.  what do people need to see?
-
-    // more robust username flow (add random number to username)
-    // more robust update username
-    // progressive web app
-
-
-    // make an introduction at Groundtalk.
-    // RT this post.
-    // download an archive of your Twitter data (settings > sdfsd > sdfsdfs), just in case.
-
-
-  // follow messages.  many-to-many, people following a given message.  (emails happen on server anyway, use supabase request and then send email with postmark.)  subscribe to specific messages.
-  // introductions post, set subscribers to all?  unsubscribe in the webapp.
-
-  // extension for crossposting on other sites
-
-  // email notifications on posts (can create forums and threads)? ... control email notifications
-
-      // reply to email, submits reply.  email based threading.
-
-  // submit post.  looks for tags.
-
-      // looks for tags by group?  think about group.
-
-  // after post submitted, send post (with html) to:
-
-      // people in the thread
-
-      // people mentioned
-
-  // coop meetings guide
-
-  // post to threads
-
-    // inbound route, reply to message
-
-  // updated about Reddit and COOP meeting time
-
-  // designate if post is markdown, or link, so knows how to render it.  that stored in html.
-
-  // ACCESSIBILITY – post on mastodon about that?  find the guy posting about that?  make it easy to customize settings, have that stored in local cache?
-
-  // share or link button to post when viewing, could just be the time stamp, or a share button next to it (link copied)
-
-  // notifications — send to email on mention.  not hard to configure, could use the open source thing from before.
-
-  // extension for crossposting on other sites
-
-  // make post describing infrastructure and schema.  post in vlcn, libqsl, htmx (tag people), reply on the kolektiva mastodon post that I posted before
-
-  // add link to groundtalk posts at end of posts?
-  
-  // figure out ids and nesting convention
-
-  // figure out how to display message with specific url
-
-  // authentication / sign -in
-
-  // save mastodon and url preferneces locally in cache
-
-  // social media client, general tool
-
-  // low energy context
-
-  // enter search query, pull from twitter api all searches for the thing, minimal load
-  
-  // image compressor
-
-  // extensions
-
-  // listen for event on twitter post (Find the event), on mastodon post
-
-  // then open the windows, same for groundtalk
-
-  // 1A1A1A -- handle server side
-
-  // groundtalk.land/1 < getMessage "1", netlify function that returns html
-
-  // image upload with squoosh
-</script>
 <head>
   <link rel="icon" href="data:,">
   <meta charset="UTF-8">
@@ -156,6 +65,10 @@
   <label style="margin-top: 5px; display: block;">Email</label>
   <input type="email" name="email" required>
   <br>
+  <div>
+    <input type="checkbox" required><label class="checkbox">I accept the <a href="/policies/use" target="_blank">terms of use</a></label><br>
+    <input type="checkbox" required><label class="checkbox">I accept the <a href="/policies/privacy" target="_blank">privacy policy</a></label>
+</div>
   <!-- <a href="" hx-post="/.netlify/functions/forgotPassword" hx-trigger="click">Forgot password?</a>
   <br>
   <label style="margin-top: 10px; display: block;">Password</label>
@@ -194,6 +107,10 @@
       </div>
 </div>
 
+<div style="margin: auto; display: flex; max-width: 200px;">
+  <a href="/policies/use" target="_blank" style="margin-right: 20px;">Terms of use</a>
+  <a href="/policies/privacy" target="_blank">Privacy policy</a>
+</div>
 </body>
 <script>
 
