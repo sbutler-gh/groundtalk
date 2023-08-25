@@ -116,10 +116,14 @@
 
   let cache = "cache";
 
-  // if this is the dev page, then we want to set appropriate settings
+  // in the backend, there is a "messages" and "messages_dev" table
+  // here, we determine if we're on index.html or dev.html (a development page), to determine which table we are requesting in the backend.
+  // why is this included in index.html, instead of just in dev.html?
+  // because this app doesn't have a framework yet, and this means I can just copy the code from index.html into dev.html to keep that as a development page, without having to manually track (and hopefully not forget) updates
   if (window.location.pathname.includes('dev')) {
     cache = "cache_dev";
 
+    // and we also add a banner if we're on the development page.
     let devBanner = document.createElement('div');
     devBanner.classList.add('devBanner');
     devBanner.innerHTML = `<p>This is a development page, for experimenting and testing purposes.  To use the live site, go <a href="/">here</a>.</p>`
@@ -130,6 +134,9 @@
 
   console.log(cache);
 
+  // we check if there is existing user data saved in local storage.
+  // If there is, the user can make posts and change their username.
+  // If not, the user will see an area to "sign in via magic link" at the top — won't be able to make any posts unless they're signed in.
   function loadUserDetails() {
       if (localStorage.getItem('username') && localStorage.getItem('username') != "undefined") {
 
@@ -160,9 +167,12 @@
       }
   }
 
+  // This is a function to handle auth, when people click a magiclink in their email to sign into the application.
   function auth() {
       if (window.location.href.includes('magiclink')) {
 
+      // We're handling this through a Netlify function, and Netlify functions don't recognize # hashtags
+      // So in order to send the magiclink query to a Netlify function for processing, we have to replace the # in the magic link url to a ? and handle it like a query string.
       console.log(window.location);
       let params_url = window.location.href.replace('#', '?')
       console.log(params_url);
@@ -205,6 +215,7 @@
 
   }
 
+  // handles the user clicking the "change username" button if they are authenticated.
   function toggleChangeUsername(event) {
 
     if (event.srcElement.innerText == "Change username") {
@@ -236,6 +247,7 @@
 
   }
 
+  // handles user attempting to change their username.
   function updateUsername(newUsername, button) {
     console.log(newUsername)
 
@@ -301,16 +313,19 @@
         xhr.send();
   }
 
+  // This section handles preparing the reply form on a post, and also walks through how the "ref" value of a new post is determined.
   function toggleReply(event) {
 
       console.log(event);
 
-      // If the button currently says "Reply" and is clicked, we will handle that accordingly.
-      // Otherwise, if the button currently says "Cancel reply", we'll go down to the else statement below and handle accordingly.
+      // If the button currently says "Reply" and is clicked, we will proceed with preparing a reply textarea.
+      // If not, we'll go down to the else statement below and handle accordingly.
       if (event.srcElement.innerText == "Reply") {
 
-      // We can comment out all this data on creating the ref locally, since we are now doing it on the server side.  Good to keep this in mind for future local-first applications though (e.g. if you want to respond, maybe creating a temp local ref when you post the messages, and then updating on server side?)
-      // In the meantime, by moving this to the server side, it should lighten up the client.
+      // IN PROGRESS NOTE
+      // We could create the "ref" value for new posts on the server side — some of that code is already configured, it's not just in development.
+      // Perhaps it would be best to prepare the "ref" value on the client side, and then error check it and handle collisions on the server side?
+      // Back to the code ...
 
       // We are preparing a comment reply form, which will include pre-populating the "ref" value for the reply.
       let ref;
@@ -348,8 +363,6 @@
 
           console.log(Array.from(nodeList));
           
-          // console.log(Array.from(nodeList).filter(node => regex.test(node)))
-
           let sibs = Array.from(nodeList).filter(node => regex.test(node.attributes['ref'].nodeValue) == true);
 
           for (i = 0; i < nodeList.length; i++) {
@@ -358,13 +371,11 @@
           }
 
           console.log(sibs);
-
-          // console.log(siblingNodeList)
-
-
-          // console.log(array.from(document.querySelectorAll(`[ref^="${parent_ref}"][ref$=":00-"]`)).filter(node => node.length ))
           siblings = sibs.length + 1;
       }
+
+      // If we're not replying to a top-level message, the code is much simpler.
+      // I figured this out at some point, I can no longer remember why — but it seems to work.
       else {
           console.log('not top level message');
           parent_ref = event.srcElement.parentNode.getAttribute('ref');
@@ -405,6 +416,8 @@
       event.srcElement.innerText = "Cancel reply"
 
       }
+
+      // This means the button state was something besides "Reply"
       else {
 
           // If this returns true, this event triggered on submission of a reply form
@@ -418,12 +431,12 @@
 
               // And we'll toggle the Reply button text from "Cancel Reply" back to "Reply"
 
-              // First, we need to get the
               let replyButton = form.previousElementSibling;
-
-
               replyButton.innerText = "Reply"
            }
+
+          //  If that didn't return true, the event triggered on clicking "Cancel reply"
+          // In which case, we will handle the toggling of the reply button accordingly.
 
           let reply = event.srcElement.nextElementSibling;
 
@@ -433,10 +446,11 @@
 
           event.srcElement.innerText = "Reply"
       }
-
-
   }
 
+  // This is the function to load messages from the backend on page load.
+  // It accepts an id value, which is either the most recent timestamp from the messages stored locally, or the value of 0 if there are no messages stored locally yet.
+  // This allows us to only get messages from the backend greater than the current id value.  (Which is all messages, if the id value is set to 0, because all of the messages will have a higher timestamp than that.)
   function getMessages(id) {
 
       const xhr = new XMLHttpRequest();
@@ -451,11 +465,11 @@
 
           if (xhr.status == 200) {
 
-          // If ID is 0, we set feed equal to the response
+          // If ID is 0, we set feed equal to the response — because we want to load all messages.
           if (id == 0) {
               document.getElementById('feed').innerHTML = xhr.response;
           }
-          // Otherwise, we append the response on top of the existing cached feed
+          // Otherwise, we append the messages from the response on top of the existing cached feed
           else {
               document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML;
 
@@ -474,6 +488,7 @@
       xhr.send();
   }
 
+  // This is where we check the cache for messages, and then call our getMessages(id) function to the backend. 
   function loadCacheThenGetMessages() {
 
       // ts = timestamp
@@ -496,12 +511,13 @@
       getMessages(id);
   }
 
+  // Handling the toggle for clicking "Show Parent" or "Hide Parent" on a message in the UI.
   function showParent(event,parentRef) {
+
 
   if (event.srcElement.innerText == "Show parent") {
       console.log(parentRef)
       console.log(event);
-      // let list = document.createElement('ul');
       let div = document.createElement('div');
       div.classList.add('parentDiv')
 
@@ -522,17 +538,18 @@
       event.srcElement.insertAdjacentElement('afterend', div);
       event.srcElement.innerText = "Hide";
 
-      // useful if we want to get a tree of parents
+      // useful code here if we want to get a tree of parents — not implemented yet:
       
-      // nodeList.forEach(div => {
-      //     console.log(div);
-      //     console.log(div.children['2']);
-      //     var li = document.createElement('li');
-      //     li.innerText = div.children['2'].innerText;
-      //     list.appendChild(li);
-      // })
+              // nodeList.forEach(div => {
+              //     console.log(div);
+              //     console.log(div.children['2']);
+              //     var li = document.createElement('li');
+              //     li.innerText = div.children['2'].innerText;
+              //     list.appendChild(li);
+              // })
 
   }
+  // If the parent message is already shown, and the user clicked to hide it:
   else {
       console.log('minimize')
       event.srcElement.innerText = "Show parent";
@@ -541,6 +558,7 @@
 
 }
 
+  // Function to toggle the display of child messages nested under a message.
   function showChildren(event,thisRef) {
 
       if (event.srcElement.innerText == "Show replies") {
@@ -548,7 +566,7 @@
           console.log(event);
           let list = document.createElement('ul');
 
-          // find all nodes with ref value that starts with thisref
+          // find all nodes with ref value that starts with the ref value of the current message (thisref)
 
           let nodeList = document.querySelectorAll(`[ref^="${thisRef}-"]`);
           console.log(nodeList);
@@ -567,9 +585,6 @@
 
           // now we count the nesting and prepare the display of nested comments for each child
           sortedList.forEach(message => {
-
-
-
 
           let div = document.createElement('div');
           div.classList.add('replyDiv')
@@ -633,6 +648,7 @@
   }
 
 
+  // On page load, we run this function.
   loadCacheThenGetMessages();
 
   function logData(event) {
@@ -672,17 +688,13 @@ htmx.on("htmx:afterSwap", function(evt) {
 
   // If the swap was a new message
   if (evt.detail.pathInfo.requestPath == "/.netlify/functions/postMessage") {
-      // we update the message cache with the updated version of the feed
+
+      // we update the message cache with the updated version of the feed including the new message
       localStorage.setItem(cache, document.getElementById('feed').innerHTML);
 
       console.log(evt.detail.requestConfig.triggeringEvent.srcElement);
 
-      // console.log(evt.target.children[0][0])
-
-      // if evt.detail.errors.length < 0
-      // document.getElementById('parentTextArea').value = "";
-
-      // And if it was a reply, we trigger the children element to show the reply
+      // And if it was a reply, we trigger the parent message to show the nested reply below it.
       if (evt.detail.requestConfig.parameters.ref) {
 
           console.log('reply')
@@ -695,8 +707,6 @@ htmx.on("htmx:afterSwap", function(evt) {
 
           console.log(parent);
 
-          // console.log(parentDiv)
-
           let showChildrenButton = form.parentElement.lastElementChild.querySelector('.children');
 
           console.log(showChildrenButton)
@@ -707,16 +717,13 @@ htmx.on("htmx:afterSwap", function(evt) {
           form.remove();
       }
 
-      // finally, we send an email notification of the post to those tagged.
-      
-
-      console.log(document.getElementById('feed').children[0].innerHTML)
-      // sendEmails(document.getElementById('feed').children[0].innerHTML)
+      // IN PROGRESS — finally, we can send an email notification of the post to those tagged.
+            // sendEmails(document.getElementById('feed').children[0].innerHTML)
 
       
   }
 
-
+  // And this handles the crossposting.  When a post is submitted, we check for any crossposting selections, and submit those as parameters to the crosspost function.
   if (document.querySelector('input[value="twitter"]').checked || document.querySelector('input[value="mastodon"]').checked || document.querySelector('input[value="reddit"]').checked) {
 
       console.log('crosspost!')
@@ -726,6 +733,7 @@ htmx.on("htmx:afterSwap", function(evt) {
   }
 });
 
+// IN PROGRESS — if we want to send emails based on certain posts.  People could subscribe to specific updates on posts, people could receive posts based on group membership, etc.
 function sendEmails(html) {
 
   console.log(html);
@@ -755,24 +763,24 @@ function sendEmails(html) {
 
 //  this function below is a work-in-progress, for local automated cross-posting
 
-// for extension when browsing other sites: css and html injection when browsing walled gardens like tiwtter and linkedin and facebook to crosspost out and mastodon
+              // for extension when browsing other sites: css and html injection when browsing walled gardens like tiwtter and linkedin and facebook to crosspost out and mastodon
 
 
-// for uploading to ground talk:
-// integer pk, natural id which is url that contains post data
-// gah integer pk makes sense (esp for many-to-many like replies), but for offline / local-first / distributed then uuidv7 makes sense
-// automatically compress images on uploading
-// choice of "upload to groundtalk"
-// email notifications on daily basis
-// implement replies
-// show where you are posting from on groundtalk with your author id?
+              // for uploading to ground talk:
+              // integer pk, natural id which is url that contains post data
+              // gah integer pk makes sense (esp for many-to-many like replies), but for offline / local-first / distributed then uuidv7 makes sense
+              // automatically compress images on uploading
+              // choice of "upload to groundtalk"
+              // email notifications on daily basis
+              // implement replies
+              // show where you are posting from on groundtalk with your author id?
 
 
 
-// authenticate groundtalk
-// authenticate mastodon?
+              // authenticate groundtalk
+              // authenticate mastodon?
 
-
+// handling the crosspost function, which uses social intent links to open windows on other platforms with the text content prepared.
 function crosspost(msg) {
   
   if (document.querySelector('input[value="twitter"]').checked) {
@@ -798,6 +806,7 @@ function crosspost(msg) {
   }
 }
 
+// when you click the Mastodon or Reddit crossposting checkbox, this focuses on the input below it so you can enter the Mastodon url or the subreddit URL where you want to crosspost to.
 function focusInput(event) {
   console.log(event.target.value);
   document.getElementById(`${event.target.value}Value`).focus();

@@ -14,6 +14,8 @@ exports.handler = async (event) => {
     }
 
     console.log(event.queryStringParameters.id);
+
+    // This is preparing the ID value, to make sure it will work in the Supabase function below — to only get messages with ID values greater than this one.
     let id = event.queryStringParameters.id.substring(0,23);
 
     let db = "messages";
@@ -55,6 +57,7 @@ exports.handler = async (event) => {
 
             let swap = "";
 
+            // here, we are preparing the HTML rendering of all the messages from the response, to return them as HTML.
                     
             for (var i= messages.length - 1; i >= 0; i--) {
 

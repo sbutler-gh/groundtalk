@@ -24,6 +24,9 @@ exports.handler = async (event) => {
 
     console.log('test');
 
+    // When we hit this endpoint, it's because a user is signing up via magic link.
+    // If it's a first-time user, we also need to give them a username to submit to the backend.
+    // This seems to work when signing in again with the same user, without resetting the username — not exactly sure why, but it works okay.
     const form = querystring.parse(event.body);
     console.log(form.email);
     form.username = form.email.substring(0, form.email.indexOf("@"));

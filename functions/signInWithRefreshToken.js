@@ -16,7 +16,6 @@ exports.handler = async (event) => {
     console.log('test');
 
     console.log(event.queryStringParameters.refresh_token);
-    // console.log(event.queryStringParameters.access_token);
 
     let refresh_token = event.queryStringParameters.refresh_token;
 
