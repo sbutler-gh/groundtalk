@@ -24,7 +24,8 @@ Here's the link to the post on the live page displayed in this screenshot above.
 
 https://groundtalk.land/#2023-08-21T09:59:52.795+00:00
 
-You can then click "Show replies" to see the nested comment tree, and "Show parent" on any of the comments to see the parent
+You can then click "Show replies" to see the nested comment tree, and "Show parent" on any of the comments to see the parent.
+
 Here's a quick demo.  Basically a hacker news like UI, except it doesn't require any further trips to the backend to load discussions because it's all in the hypermedia and stored locally.
 
 
