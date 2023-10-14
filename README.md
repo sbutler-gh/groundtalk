@@ -2,12 +2,6 @@
 
 Here is for the [home page](public/index.html) and the [app page](public/feed.html).  In the functions folder, you can find the code for the functions and requests to the DB.  Made with HTMX, Supabase, and Netlify functions, and hosted on Netlify.
 
-## Active pages in this respository
-
-public/index.html, public/dev.html, functions/getMessages.js, functions/postMessage.js, functions/signInWithOtp, functions/signInWithRefreshToken, functions/UpdateUsername
-
-(there are some other files in the repository, referencing works in development)
-
 ## Architecture
 
 Here is a screenshot which explains the architecture.  You have two types of messages: top-level posts, which have a ref value of **null**, and other posts which have a **ref** value — meaning it's a reply under some other post.
