@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="data:,">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Groundtalk — A low-tech social media network</title>
+  <meta property="og:title" content="Groundtalk — A low-tech digital network, people and worker led">
+  <meta name="twitter:title" content="Groundtalk — A low-tech digital network, people and worker led">
+
+  <!-- Description Tags -->
+  <meta name="description" content="Want a network for ourselves — built for low-energy and resilience, led by workers and people, and in service of the worlds we want to make?">
+  <meta property="og:description" content="Want a network for ourselves — built for low-energy and resilience, led by workers and people, and in service of the worlds we want to make?">
+  <meta name="twitter:description" content="Want a network for ourselves — built for low-energy and resilience, led by workers and people, and in service of the worlds we want to make?">
+
+
+  <!-- URL Tags -->
+  <meta property="og:url" content="https://groundtalk.land">
+  <meta property="twitter:url" content="https://groundtalk.land">
+  <meta property="twitter:domain" content="groundtalk.land">
+
+  <!-- Image Tags -->
+  <meta property="og:image" content="https://groundtalk.land/groundtalk.jpg">
+  <meta name="twitter:image" content="https://groundtalk.land/groundtalk.jpg">
+
+    <!-- Other Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:type" content="website">
+    
+  <!-- END OPENGRAPH TAGS -->
+
+<script src="https://unpkg.com/htmx.org@1.8.6"></script>
+<script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
+</head>
+
+<body onload="loadUserDetails()" style="max-width: 100%; width: 800px; margin: auto;">
+<!-- <nav>
+  <a href="/">Home</a>
+  <a href="/library.html">Library</a>
+  <a href="/dev.html">Dev</a>
+</nav> -->
+
+<div style="margin-left: auto; width: fit-content;">
+  <form style="text-align: right;" id="signInForm" hx-post="/.netlify/functions/signInWithOtp" hx-target="#signInUpdate" hx-trigger="submit">
+   <p style="margin-bottom: 0px;"><strong>Sign in with magic link</strong></p>
+  <label style="margin-top: 5px; display: block;">Email</label>
+  <input type="email" name="email" placeholder="Enter your email" required>
+  <br>
+  <div>
+    <input type="checkbox" required><label class="checkbox">I accept the <a href="/policies/use" target="_blank">terms of use</a></label><br>
+    <input type="checkbox" required><label class="checkbox">I accept the <a href="/policies/privacy" target="_blank">privacy policy</a></label>
+</div>
+  <!-- <a href="" hx-post="/.netlify/functions/forgotPassword" hx-trigger="click">Forgot password?</a>
+  <br>
+  <label style="margin-top: 10px; display: block;">Password</label>
+  <input name="password"><br> -->
+  <button type="submit" style="display: block; margin: 10px 0 10px auto">Send Magic Link</button>
+  <span id="signInUpdate"></span>
+  </form>
+</div>
+
+<div style="margin: auto">
+          <!-- <label>Posting as ...</label><input name="author">
+              <br><br> -->
+
+      <form class="center" style="" hx-post="/.netlify/functions/postMessage" hx-target="#feed" hx-swap="afterbegin" hx-trigger="submit" _="on htmx:configRequest call logData(event)">
+        <p class=""><em>Enter new post</em></p>  
+        <textarea id="parentTextArea" name="txt" style="width: 350px; height: 100px"></textarea>
+          <input name="by" class="by" id="by_main" style="display: none;">
+          <input name="username" class="username" id="username_main" style="display: none;">
+          <!-- <p style="text-align: center;"><em>Crosspost to:</em></p> -->
+      <button style="margin-left: auto; display: block;">Submit</button>
+      </form>
+      <div style="max-width: 350px; margin: 30px auto 15px auto;">
+      <hr>
+      <button style="margin-top: 10px; margin-left: auto; color: blue; text-decoration: none; cursor: pointer;" onclick="getMessages(0)">Refresh messages</button>
+      </div>
+      <br>
+      <div id="feed" class="center">
+
+      </div>
+</div>
+
+<div style="margin: auto; display: flex; max-width: 200px;">
+  <a href="/policies/use" target="_blank" style="margin-right: 20px;">Terms of use</a>
+  <a href="/policies/privacy" target="_blank">Privacy policy</a>
+</div>
+</body>
+<script>
+
+  let cache = "cache";
+
+  // in the backend, there is a "messages" and "messages_dev" table
+  // here, we determine if we're on index.html or dev.html (a development page), to determine which table we are requesting in the backend.
+  // why is this included in index.html, instead of just in dev.html?
+  // because this app doesn't have a framework yet, and this means I can just copy the code from index.html into dev.html to keep that as a development page, without having to manually track (and hopefully not forget) updates
+  if (window.location.pathname.includes('dev')) {
+    cache = "cache_dev";
+
+    // and we also add a banner if we're on the development page.
+    let devBanner = document.createElement('div');
+    devBanner.classList.add('devBanner');
+    devBanner.innerHTML = `<p>This is a development page, for experimenting and testing purposes.  To use the live site, go <a href="/">here</a>.</p>`
+
+    document.body.insertBefore(devBanner, document.body.firstChild);
+
+  }
+
+  console.log(cache);
+
+  // we check if there is existing user data saved in local storage.
+  // If there is, the user can make posts and change their username.
+  // If not, the user will see an area to "sign in via magic link" at the top — won't be able to make any posts unless they're signed in.
+  function loadUserDetails() {
+      if (localStorage.getItem('username') && localStorage.getItem('username') != "undefined") {
+
+          let profileDiv = document.createElement('div');
+          profileDiv.id = "profileDiv"
+          profileDiv.style = "text-align: right"
+          profileDiv.innerHTML = `<p id="profileUsername" class="user">${localStorage.getItem('username')}</p>
+          <button onclick="toggleChangeUsername(event)" style="margin-left: auto">Change username</button>
+          `
+
+          if (document.getElementById('signInForm')) {
+            document.getElementById('signInForm').replaceWith(profileDiv)
+          }
+          else {
+            document.getElementById('profileDiv').replaceWith(profileDiv)
+          }
+
+          document.getElementById('username_main').setAttribute('value', localStorage.getItem('username'));
+          document.getElementById('by_main').setAttribute('value', localStorage.getItem('id'));
+
+          // document.body.addEventListener('htmx:configRequest', function(evt) {
+          //     evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the mix
+          // });
+      }
+
+      else {
+          auth()
+      }
+  }
+
+  // This is a function to handle auth, when people click a magiclink in their email to sign into the application.
+  function auth() {
+      if (window.location.href.includes('magiclink')) {
+
+      // We're handling this through a Netlify function, and Netlify functions don't recognize # hashtags
+      // So in order to send the magiclink query to a Netlify function for processing, we have to replace the # in the magic link url to a ? and handle it like a query string.
+      console.log(window.location);
+      let params_url = window.location.href.replace('#', '?')
+      console.log(params_url);
+      let params = new URLSearchParams(params_url);
+      console.log([...params])
+      console.log([...params][0][1]);
+
+      // console.log([...params.[2].[1]])
+
+      const xhr = new XMLHttpRequest();
+
+      // adding timestamp value as query parameter
+      const url = `/.netlify/functions/signInWithRefreshToken/?refresh_token=${params.get('refresh_token')}`
+
+      xhr.open("GET", url);
+
+      xhr.onload = function () {
+
+          if (xhr.status == 200) {
+
+              let response = JSON.parse(xhr.response);
+              console.log(response);
+
+              localStorage.setItem('id', response.user.id);
+              localStorage.setItem('email', response.user.email);
+              localStorage.setItem('username', response.user?.user_metadata?.username)
+              localStorage.setItem('access_token', response.access_token);
+              localStorage.setItem('session', response);
+
+              loadUserDetails()
+          }
+      };
+      xhr.onerror = function () {
+          // ...handle/report error...
+      };
+
+      xhr.send();
+
+      }
+
+  }
+
+  // handles the user clicking the "change username" button if they are authenticated.
+  function toggleChangeUsername(event) {
+
+    if (event.srcElement.innerText == "Change username") {
+
+      let usernameInput = document.createElement('input');
+      usernameInput.id = "usernameInput"
+      usernameInput.value = document.getElementById('profileUsername').innerText;
+      usernameInput.style = "margin-bottom: 5px;"
+      document.getElementById('profileUsername').replaceWith(usernameInput);
+
+      event.srcElement.innerText = "Submit new username";
+
+      let cancel = document.createElement('button');
+      cancel.innerText = "Cancel"
+      cancel.style = "margin-left: auto;"
+      cancel.setAttribute('onclick', 'toggleChangeUsername(event)');
+
+      event.srcElement.insertAdjacentElement('afterend', cancel)
+
+    }
+    else if (event.srcElement.innerText == "Cancel") {
+      document.getElementById('profileDiv').innerHTML = `<p id="profileUsername" class="user">${localStorage.getItem('username')}</p>
+          <button onclick="toggleChangeUsername(event)" style="margin-left: auto">Change username</button>
+          `
+    }
+    else if (event.srcElement.innerText == "Submit new username") {
+      updateUsername(document.getElementById('usernameInput').value, event.srcElement)
+    }
+
+  }
+
+  // handles user attempting to change their username.
+  function updateUsername(newUsername, button) {
+    console.log(newUsername)
+
+    button.setAttribute('disabled', 'true');
+
+    const xhr = new XMLHttpRequest();
+
+    // adding newUsername and id values as query parameter
+    const url = `/.netlify/functions/updateUsername/?username=${newUsername}&id=${localStorage.getItem('id')}&email=${localStorage.getItem('email')}`
+
+    xhr.open("POST", url);
+    xhr.setRequestHeader('Authorization', 'apikey ' + localStorage.getItem('access_token'));
+
+        xhr.onload = function () {
+            console.log(xhr.response);
+
+            let response = document.createElement('p');
+            response.style = "font-style: italic; display: block; margin: 10px 0px;";
+            let target = "";
+
+            if (xhr.status == 200) {
+
+              localStorage.setItem('username', newUsername);
+              loadUserDetails()
+
+            // localStorage.setItem('username');
+            // loadUserDetails();
+
+            response.innerText = "Success!"
+            response.style.color = "green";
+            response.style.marginLeft = "auto";
+            response.style.textAlign = "right";
+            target = document.getElementById('profileDiv');
+
+
+            }
+            else {
+              response.style.color = "darkred";
+              target = document.getElementById('usernameInput');
+
+              if (JSON.parse(xhr.response)?.code == "23505") {
+                response.innerText = "Username already taken.  Try another.";
+              }
+              else {
+                response.innerText = JSON.parse(xhr.response)?.details + "  Try again.";
+              }
+            }
+
+            button.removeAttribute('disabled');
+
+            target.insertAdjacentElement('afterend', response);
+
+            setTimeout(function() {
+              response.remove();
+            }, 3000)
+        };
+        xhr.onerror = function () {
+            // ...handle/report error...
+            console.log('error in updatingUsername');
+            console.log(xhr)
+        };
+
+        xhr.send();
+  }
+
+  // This section handles preparing the reply form on a post, and also walks through how the "ref" value of a new post is determined.
+  function toggleReply(event) {
+
+      console.log(event);
+
+      // If the button currently says "Reply" and is clicked, we will proceed with preparing a reply textarea.
+      // If not, we'll go down to the else statement below and handle accordingly.
+      if (event.srcElement.innerText == "Reply") {
+
+      // IN PROGRESS NOTE
+      // We could create the "ref" value for new posts on the server side — some of that code is already configured, it's not just in development.
+      // Perhaps it would be best to prepare the "ref" value on the client side, and then error check it and handle collisions on the server side?
+      // Back to the code ...
+
+      // We are preparing a comment reply form, which will include pre-populating the "ref" value for the reply.
+      let ref;
+      
+      // The "ref" value is a chain going back to a top-level message.
+      // 2023-07-23T09:44:38.787+00:00-1 is the first reply to a top-level message.
+      // 2023-07-23T09:44:38.787+00:00-2 is the second reply to a top-level message.
+      // 2023-07-23T09:44:38.787+00:00-1-1 is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00-1
+      // 2023-07-23T09:44:38.787+00:00-1-2 is the second reply to the message where ref=2023-07-23T09:44:38.787+00:00-2
+      // 2023-07-23T09:44:38.787+00:00-1-1-1 is the first reply to the message where ref=2023-07-23T09:44:38.787+00:00-1-1
+
+      // to get the ref value for the new reply, we first need the ref value for the message we're replying to
+      let parent_ref;
+      
+      // we also need to check the number of siblings in the chain — the Nth number of replies to the same message (starting at index of 1)
+
+      let siblings;
+
+      // if we're replying to a top-level comment, the parent_ref value will be null
+      // we also need to handle this case a little carefully with the siblings value
+      if (event.srcElement.parentNode.getAttribute('ref') == "null") {
+          console.log('top level message')
+
+          // since there is no ref value for this message, we will use it's id instead
+          parent_ref = event.srcElement.parentNode.id;
+
+           // to determine the amount of siblings in this chain, we only want to count all the siblings on the first level — e.g. only those with a single hyphen
+           let nodeList = document.querySelectorAll(`[ref^="${parent_ref}"]`);
+
+          //  however, this will return a list of ALL the messages with reference values that begin with the parent_ref — including those on the second, third, fourth levels.
+          // So we want to use a regex to find only the siblings on the first level — by filtering the nodeList above for values that end in a :00-[number]
+          const regex = new RegExp(/:00-\d+$/i);
+
+          console.log(nodeList);
+
+          console.log(Array.from(nodeList));
+          
+          let sibs = Array.from(nodeList).filter(node => regex.test(node.attributes['ref'].nodeValue) == true);
+
+          for (i = 0; i < nodeList.length; i++) {
+              console.log(nodeList[i].attributes['ref'].nodeValue);
+              console.log(regex.test(nodeList[i].attributes['ref'].nodeValue))
+          }
+
+          console.log(sibs);
+          siblings = sibs.length + 1;
+      }
+
+      // If we're not replying to a top-level message, the code is much simpler.
+      // I figured this out at some point, I can no longer remember why — but it seems to work.
+      else {
+          console.log('not top level message');
+          parent_ref = event.srcElement.parentNode.getAttribute('ref');
+          console.log(parent_ref);
+          console.log(document.querySelectorAll(`[ref^="${parent_ref}"]`));
+          siblings = document.querySelectorAll(`[ref^="${parent_ref}"]`).length;
+          console.log(siblings);
+      }
+
+      // Finally, we set the ref value for the new message reply based on the siblings found in the chain above
+
+      ref = parent_ref + "-" + siblings
+      console.log(ref);
+
+
+      // Now we create an element which will be inserted into the DOM and contains the form and textarea for the new message, including a hidden input value with the "ref" for the message reply — that we determined above
+      let reply = document.createElement('form');
+
+      reply.classList.add("replyForm")
+      reply.setAttribute('hx-post', "/.netlify/functions/postMessage")
+      reply.setAttribute('hx-target', "this")
+      reply.setAttribute('hx-swap', "afterend")
+      reply.setAttribute('hx-trigger', "submit")
+
+      reply.innerHTML = `<textarea name="txt"></textarea><br>
+          <input value=${ref} name="ref" style="display: none">
+          <input id="reply_username" class="username" name="username" value="${localStorage?.getItem('username')}" style="display: none">
+          <input id="by_reply" name="by" class="by" value="${localStorage?.getItem('id')}" style="display: none;">
+          <button class="replyToggle" type="submit" onclick="toggleReply(event)">Submit reply</button>
+          <br>`;
+
+      event.srcElement.insertAdjacentElement('afterend', reply);
+
+      // after inserting an element via the DOM, we have to run htmx.process() for htmx to work on the newly inserted element.  documentation from htmx here: https://htmx.org/api/
+      htmx.process(document);
+
+      // We change the reply button text to "Cancel reply", for toggling purposes — so when it's clicked again, it will toggle as expected
+      event.srcElement.innerText = "Cancel reply"
+
+      }
+
+      // This means the button state was something besides "Reply"
+      else {
+
+          // If this returns true, this event triggered on submission of a reply form
+          if (event.target.outerText == "Submit reply") {
+
+              // So we'll first find the form
+              let form = event.target.parentElement;
+
+              // And set it's display to none
+              form.style.display = "none";
+
+              // And we'll toggle the Reply button text from "Cancel Reply" back to "Reply"
+
+              let replyButton = form.previousElementSibling;
+              replyButton.innerText = "Reply"
+           }
+
+          //  If that didn't return true, the event triggered on clicking "Cancel reply"
+          // In which case, we will handle the toggling of the reply button accordingly.
+
+          let reply = event.srcElement.nextElementSibling;
+
+          console.log(reply);
+
+          reply.remove();
+
+          event.srcElement.innerText = "Reply"
+      }
+  }
+
+  // This is the function to load messages from the backend on page load.
+  // It accepts an id value, which is either the most recent timestamp from the messages stored locally, or the value of 0 if there are no messages stored locally yet.
+  // This allows us to only get messages from the backend greater than the current id value.  (Which is all messages, if the id value is set to 0, because all of the messages will have a higher timestamp than that.)
+  function getMessages(id) {
+
+      const xhr = new XMLHttpRequest();
+
+      // adding timestamp value as query parameter
+      const url = `/.netlify/functions/getMessages/?id=${id}`
+
+      xhr.open("GET", url);
+
+      xhr.onload = function () {
+          console.log(xhr.response);
+
+          if (xhr.status == 200) {
+
+          // If ID is 0, we set feed equal to the response — because we want to load all messages.
+          if (id == 0) {
+              document.getElementById('feed').innerHTML = xhr.response;
+          }
+          // Otherwise, we append the messages from the response on top of the existing cached feed
+          else {
+              document.getElementById('feed').innerHTML = xhr.response + document.getElementById('feed').innerHTML;
+
+          }
+
+          // and we update the message cache in local storage with the updated version of the feed
+          localStorage.setItem(cache, document.getElementById('feed').innerHTML);
+          }
+      };
+      xhr.onerror = function () {
+          // ...handle/report error...
+          console.log('error in loadCacheThenGetMessages');
+          console.log(xhr)
+      };
+
+      xhr.send();
+  }
+
+  // This is where we check the cache for messages, and then call our getMessages(id) function to the backend. 
+  function loadCacheThenGetMessages() {
+
+      // ts = timestamp
+      // we will append this as a query parameter to the GET request, to indicate which messages (if any) to retrieve in the backend
+      // because some messages may already be cached locally, as a way of lowering the amount of requests and repeated data transfers
+      let id = 0;
+
+      if (localStorage[cache]) {
+
+          console.log('cache length');
+          console.log(localStorage[cache].length)
+
+          // setting the feed to all of the messages in the cache
+          document.getElementById('feed').innerHTML = localStorage[cache];
+
+          // Set the timestamp value equal to the timestamp value of the latest message in the cache.
+          id = document.getElementsByClassName("post")[0].id;
+      }
+
+      getMessages(id);
+  }
+
+  // Handling the toggle for clicking "Show Parent" or "Hide Parent" on a message in the UI.
+  function showParent(event,parentRef) {
+
+
+  if (event.srcElement.innerText == "Show parent") {
+      console.log(parentRef)
+      console.log(event);
+      let div = document.createElement('div');
+      div.classList.add('parentDiv')
+
+      // find the parent by searching for element with ID or ref value that starts with thisref
+
+      let parent = document.querySelector(`[ref="${[parentRef]}"], [id="${[parentRef]}"]`);
+
+      let parentUsername = parent.querySelector('.by').innerText;
+      let parentByID = parent.querySelector('.by').getAttribute('href');
+      let parentTime = parent.querySelector('.ts').innerText;
+      let parentText = parent.querySelector('.txt').innerText;
+
+      div.innerHTML =`
+      <span class="messageHead"><a class="by" href="${parentByID}">${parentUsername}</a><a href="#${parent.id}" class="relation ts">${parentTime}</a></span>
+      <p class="txt">${parentText}</p>
+      `
+
+      event.srcElement.insertAdjacentElement('afterend', div);
+      event.srcElement.innerText = "Hide";
+
+      // useful code here if we want to get a tree of parents — not implemented yet:
+      
+              // nodeList.forEach(div => {
+              //     console.log(div);
+              //     console.log(div.children['2']);
+              //     var li = document.createElement('li');
+              //     li.innerText = div.children['2'].innerText;
+              //     list.appendChild(li);
+              // })
+
+  }
+  // If the parent message is already shown, and the user clicked to hide it:
+  else {
+      console.log('minimize')
+      event.srcElement.innerText = "Show parent";
+      event.srcElement.nextSibling.remove();
+  }
+
+}
+
+  // Function to toggle the display of child messages nested under a message.
+  function showChildren(event,thisRef) {
+
+      if (event.srcElement.innerText == "Show replies") {
+          console.log(thisRef)
+          console.log(event);
+          let list = document.createElement('ul');
+
+          // find all nodes with ref value that starts with the ref value of the current message (thisref)
+
+          let nodeList = document.querySelectorAll(`[ref^="${thisRef}-"]`);
+          console.log(nodeList);
+
+          // If children with same thisRef value exist
+          if ([...nodeList].length > 0) {
+
+          let sortedList = [...nodeList].sort((a, b) => (a.attributes['ref'].nodeValue.substring(30) > b.attributes['ref'].nodeValue.substring(30)) ? 1 : -1);
+
+          console.log(sortedList);
+
+          // here, we are setting the indent and display based on the number of hyphens in the ref value, to get the level of "nesting" in the message
+          // first, we count the number of hyphens/nesting level in thisRef (we subtract 3, because that's how many hyphens come from the timestamp, instead of the reply nesting convention)
+           // first-level reply to a parent message will have a level of 1, a reply to a first-level reply will have a level of 2
+          let thisRefNesting = thisRef.split("-").length - 3
+
+          // now we count the nesting and prepare the display of nested comments for each child
+          sortedList.forEach(message => {
+
+          let div = document.createElement('div');
+          div.classList.add('replyDiv');
+          let refAttribute = message.attributes["ref"].value;
+          console.log(refAttribute);
+          div.setAttribute('ref', refAttribute);
+
+
+      let username = message.querySelector('.by').innerText;
+      let byID = message.querySelector('.by').getAttribute('href');
+      let time = message.querySelector('.ts').innerText;
+      let text = message.querySelector('.txt').innerText;
+
+      div.innerHTML =`
+      <span class="messageHead"><a class="by" href="${byID}">${username}</a><a href="#${message.id}" class="relation ts">${time}</a></span>
+      <p class="txt">${text}</p>
+      <button class="toggle reply"  onclick=toggleReply(event);>Reply</button>
+      `
+
+              // here we are counting the number of hyphens in the ref value of a child, to get the level of "nesting" of the child.
+              // first-level reply to a parent message will have a level of 1, a reply to a first-level reply will have a level of 2
+              let childRefNesting = message.getAttribute('ref').split("-").length - 3;
+              console.log(childRefNesting);
+
+              // now we calculate the indent for nested replies, which we will include as marginLeft in the styling
+              // for the purpose of display, this should be based on the difference betwen thisRef's nesting level and the child reply's nesting level
+              // (or else, if you looked at the children of a 3rd level nested reply, the margin would be way off and inconsistent)
+              let nestingDiff = childRefNesting - thisRefNesting;
+
+              // Finally, we determine the indentation
+              let indent = (nestingDiff - 1) * 20;
+
+              // And implement that in the styling
+              div.style.marginLeft = indent + "px";
+              list.appendChild(div);
+          })
+
+          console.log(list);
+
+          event.srcElement.insertAdjacentElement('afterend', list);
+          event.srcElement.innerText = "Hide replies";
+      }
+
+      // If no replies found
+      else {
+          let p = document.createElement('p');
+          p.className = "noReplyMsg"
+          p.style = "font-size: 13px; font-style: italic; color: darkbrown;"
+          p.innerText = "No replies on this post yet"
+          event.srcElement.insertAdjacentElement('afterend', p);
+
+          setTimeout(function () {
+              p.remove()
+          }
+          , 2500)
+      }
+
+      }
+      else {
+          console.log('minimize')
+          event.srcElement.innerText = "Show replies";
+          event.srcElement.nextSibling.remove();
+      }
+
+  }
+
+
+  // On page load, we run this function.
+  loadCacheThenGetMessages();
+
+  function logData(event) {
+    console.log('logging data');
+          console.log(event);
+  }   
+
+  function sortList(ul){
+  var new_ul = ul.cloneNode(false);
+
+  // Add all lis to an array
+  var lis = [];
+  for(var i = ul.childNodes.length; i--;){
+      if(ul.childNodes[i].nodeName === 'LI')
+          lis.push(ul.childNodes[i]);
+  }
+
+  // Sort the lis in descending order
+  lis.sort(function(a, b){
+     return parseInt(b.childNodes[0].data , 10) - 
+            parseInt(a.childNodes[0].data , 10);
+  });
+
+  // Add them into the ul in order
+  for(var i = 0; i < lis.length; i++)
+      new_ul.appendChild(lis[i]);
+  ul.parentNode.replaceChild(new_ul, ul);
+}
+
+
+htmx.on("htmx:afterSwap", function(evt) {
+  console.log('after swap')
+  console.log(evt);
+  console.log(evt.detail.requestConfig.parameters.txt);
+  console.log(evt.detail.requestConfig.parameters.id);
+  console.log(evt.detail.pathInfo.requestPath);
+
+  // If the swap was a new message
+  if (evt.detail.pathInfo.requestPath == "/.netlify/functions/postMessage") {
+
+      // we update the message cache with the updated version of the feed including the new message
+      localStorage.setItem(cache, document.getElementById('feed').innerHTML);
+
+      console.log(evt.detail.requestConfig.triggeringEvent.srcElement);
+
+      // And if it was a reply, we trigger the parent message to show the nested reply below it.
+      if (evt.detail.requestConfig.parameters.ref) {
+
+          console.log('reply')
+          
+          let form = evt.detail.requestConfig.triggeringEvent.srcElement
+
+          console.dir(form);
+          
+          let parent = form.parentElement;
+
+          console.log(parent);
+
+          let showChildrenButton = form.parentElement.lastElementChild.querySelector('.children');
+
+          console.log(showChildrenButton)
+
+          showChildrenButton.click();
+
+          // And we remove the reply form
+          form.remove();
+      }
+
+      // IN PROGRESS — finally, we can send an email notification of the post to those tagged.
+            // sendEmails(document.getElementById('feed').children[0].innerHTML)
+
+      
+  }
+
+  // And this handles the crossposting.  When a post is submitted, we check for any crossposting selections, and submit those as parameters to the crosspost function.
+//   if (document.querySelector('input[value="twitter"]').checked || document.querySelector('input[value="mastodon"]').checked || document.querySelector('input[value="reddit"]').checked) {
+
+//       console.log('crosspost!')
+
+//       crosspost(evt.detail.requestConfig.parameters.txt)
+
+//   }
+});
+
+// IN PROGRESS — if we want to send emails based on certain posts.  People could subscribe to specific updates on posts, people could receive posts based on group membership, etc.
+function sendEmails(html) {
+
+  console.log(html);
+
+  const xhr = new XMLHttpRequest();
+
+    // adding timestamp value as query parameter
+    const url = `/.netlify/functions/sendEmails/?html=${html}`
+
+    xhr.open("POST", url);
+
+    xhr.onload = function () {
+
+      if (xhr.status == 200) {
+
+          let response = JSON.parse(xhr.response);
+          console.log(response);
+      }
+    };
+    xhr.onerror = function () {
+      // ...handle/report error...
+    };
+
+    xhr.send();
+
+}
+
+//  this function below is a work-in-progress, for local automated cross-posting
+
+              // for extension when browsing other sites: css and html injection when browsing walled gardens like tiwtter and linkedin and facebook to crosspost out and mastodon
+
+
+              // for uploading to ground talk:
+              // integer pk, natural id which is url that contains post data
+              // gah integer pk makes sense (esp for many-to-many like replies), but for offline / local-first / distributed then uuidv7 makes sense
+              // automatically compress images on uploading
+              // choice of "upload to groundtalk"
+              // email notifications on daily basis
+              // implement replies
+              // show where you are posting from on groundtalk with your author id?
+
+
+
+              // authenticate groundtalk
+              // authenticate mastodon?
+
+// handling the crosspost function, which uses social intent links to open windows on other platforms with the text content prepared.
+function crosspost(msg) {
+  
+  if (document.querySelector('input[value="twitter"]').checked) {
+      var twitter = window.open(`https://twitter.com/intent/tweet?text=${msg}`, 'twitter','width=500,height=500');
+
+  }
+  
+  if (document.querySelector('input[value="mastodon"]').checked) {
+      
+      let instance_url = document.getElementById('mastodonValue').value;
+      var mastodon = window.open(`https://${instance_url}/share?text=${msg}`, 'mastodon','width=500,height=500');
+
+  }
+
+  if (document.querySelector('input[value="reddit"]').checked) {
+
+      let body = encodeURIComponent(msg);
+      
+      let subreddit = document.getElementById('redditValue').value;
+      console.log(document.getElementById('redditValue').value);
+      var reddit = window.open(`https://www.reddit.com/r/${subreddit}/submit?title=Post%title&text=${msg}`, 'reddit','width=500,height=500');
+
+  }
+}
+
+// when you click the Mastodon or Reddit crossposting checkbox, this focuses on the input below it so you can enter the Mastodon url or the subreddit URL where you want to crosspost to.
+function focusInput(event) {
+  console.log(event.target.value);
+  document.getElementById(`${event.target.value}Value`).focus();
+}
+</script>
+
+<style>
+  .center {
+      margin: auto;
+      width: fit-content;
+      display: block;
+  }
+  div.post {
+      background: lightyellow; padding: 1em; border: solid 1px darkgrey; border-radius: 10px; width: 300px; max-width: 100%; margin-bottom: 0.75em;
+      border-bottom: solid 1px black;
+      position: relative;
+  }
+  p.by {
+      font-weight: 600;
+      font-size: 14px;
+  }
+  p.ts {
+      font-style: italic;
+      font-size: 12px;
+  }
+  p.ref {
+      display: none;
+  }
+  @media only screen and (max-width: 600px) {
+
+  .header h2{
+    font-size: 1.3em;
+    line-height: normal;
+  }
+  .header h1{
+    font-size: 1.7em;
+    line-height: normal;
+    margin-top: -11px !important;
+  }
+}
+button {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.checkbox > label {
+  margin-left: 5px;
+}
+
+.user {
+  font-weight: bold;
+}
+
+p.txt {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  max-height: 300px;
+  overflow: scroll;
+}
+
+.messageHead > a {
+  /* cursor: pointer; */
+  color: #000000a8;
+  /* margin-right: 10px; */
+  font-size: 15px;
+}
+
+.messageHead a.by {
+  text-decoration: none;
+  pointer-events: none;
+  margin-right: 5px;
+}
+
+.messageHead a.ts {
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.messageHead a.ts:hover {
+  text-decoration: underline;
+}
+
+.relation.ts {
+  pointer-events: all;
+  text-decoration: underline;
+}
+
+/* .messageHead a.ts:hover::after {
+  content: '(copy to share)';
+  margin-left: 5px;
+} */
+
+/* .messageHead .by::after {
+  content: '•';
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 10px;
+} */
+
+/* .messageHead .by {
+  font-size: 16px;
+} */
+/* .messageHead .ts::after {
+  content: ')';
+} */
+/* .messageHead .ts::before {
+  content: '(';
+  margin-left: 5px;
+} */
+
+button.reply {
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  color: mediumblue;
+  cursor: pointer;
+}
+
+/* .parentSection {
+  border-bottom: solid 1px grey;
+  width: 100%
+} */
+
+button.relation {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: grey;
+  margin: 5px 0px;
+}
+
+/* .parentSection {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px
+}
+
+.parentSection > p {
+  margin: 0px;
+} */
+
+.repliesSection {
+  margin-top: 10px;
+}
+
+.parentSection a.ts {
+  pointer-events: all !important;
+  text-decoration: underline;
+}
+/* 
+.messageHead a:hover {
+  text-decoration: underline;
+} */
+
+button.parent {
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 13px; */
+}
+
+.parentDiv{
+  margin: 10px 0px;
+}
+
+.checkboxInput {
+  max-width: 75px;
+    margin-left: 2px;
+    border: none;
+    border-bottom: solid 1px black;
+    padding: 0px;
+}
+
+.devBanner {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  background: dodgerblue;
+  color: white;
+  z-index: 100;
+}
+
+.devBanner p {
+  /* width: 600px;
+  max-width: 100%; */
+  margin: 20px auto;
+}
+
+.devBanner a {
+  color: white;
+}
+
+#mastodonValue {
+  margin-left: auto;
+    display: block;
+    width: 100px;
+    padding: 3px;
+}
+
+[ref^="2"]:not(.replyDiv) {
+    display: none;
+}
+</style>
+</html>

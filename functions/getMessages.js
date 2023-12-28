@@ -58,6 +58,17 @@ exports.handler = async (event) => {
             let swap = "";
 
             // here, we are preparing the HTML rendering of all the messages from the response, to return them as HTML.
+
+            const map = {
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#x27;',
+              "/": '&#x2F;',
+          };
+
+          const reg = /[&<>"'/]/ig;
                     
             for (var i= messages.length - 1; i >= 0; i--) {
 
@@ -66,6 +77,8 @@ exports.handler = async (event) => {
             let replyRef = messages[i].id
 
             let username = messages[i].profiles.username;
+
+            messages[i].txt.replace(reg, (match)=>(map[match]));
 
             message = `<div id=${messages[i].id} ref=${messages[i].ref} class="post">`
 
