@@ -84,7 +84,7 @@ button:hover {
   z-index: 100;
   background: aliceblue;
   max-height: 200px;
-  overflow: scroll;
+  overflow: auto;
   padding: 1rem;
   box-shadow: 3px 2px 5px 1px grey;
   border-radius: 7px;
